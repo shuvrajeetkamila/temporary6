@@ -58,7 +58,7 @@ public class AeroplanePhysics {
             engineRpm = Math.max(750.0f, engineRpm - 600.0f * dt);
         }
 
-        float maxThrustN = 5400.0f;
+        float maxThrustN = 5600.0f;
         float propAdvanceRatio = Math.max(0.2f, 1.0f - (airspeedMs / 95.0f));
         float thrustN = maxThrustN * throttle * (engineRpm / 2650.0f) * propAdvanceRatio;
 
@@ -100,8 +100,8 @@ public class AeroplanePhysics {
         airspeedMs = Math.max(0.0f, airspeedMs + accelForward * dt);
 
         // 5. Flight Controls (authority scales with airspeed and slipstream)
-        float controlAuthority = Math.min(1.0f, Math.max(0.35f, airspeedMs / 25.0f));
-        pitchRad += (-pitchInput * 0.45f * controlAuthority - pitchRad * 0.25f) * dt;
+        float controlAuthority = Math.min(1.0f, Math.max(0.75f, airspeedMs / 22.0f));
+        pitchRad += (-pitchInput * 0.75f * controlAuthority - pitchRad * 1.8f) * dt;
         rollRad += (rollInput * 0.65f * controlAuthority - rollRad * 0.5f) * dt;
         yawRad += (rudderInput * 0.25f * controlAuthority) * dt;
 

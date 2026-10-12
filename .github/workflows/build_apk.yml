@@ -46,62 +46,14 @@ jobs:
           gradle wrapper --gradle-version 8.5
           chmod +x gradlew
 
-      - name: Print Dependencies Diagnostics
-        run: |
-          ./gradlew :core:dependencies --configuration compileClasspath
-
-      - name: Run Core Subsystem Tests
-        run: |
-          set -o pipefail
-          ./gradlew :core:test 2>&1 | tee test_output.log || {
-            mkdir -p artifacts
-            echo "=== EXACT COMPILATION ERRORS ===" > artifacts/failure_diagnostics.txt
-            cat test_output.log | head -n 150 >> artifacts/failure_diagnostics.txt
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add artifacts/failure_diagnostics.txt
-            git commit -m "diagnostics: exact compilation errors [skip ci]"
-            git push origin arena/f4abc217-temporary6
-            exit 1
-          }
-
-      - name: Build Android Debug APK
-        run: |
-          set -o pipefail
-          ./gradlew :android:assembleDebug 2>&1 | tee build_output.log || {
-            mkdir -p artifacts
-            echo "=== ANDROID BUILD FAILURE ===" > artifacts/failure_diagnostics.txt
-            head -n 100 build_output.log >> artifacts/failure_diagnostics.txt
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add artifacts/failure_diagnostics.txt
-            git commit -m "diagnostics: build error log [skip ci]"
-            git push origin arena/f4abc217-temporary6
-            exit 1
-          }
-
-      - name: Stage Universal APK and Checksums
+      - name: Dump Dependency Diagnostics
         run: |
           mkdir -p artifacts
-          cp android/build/outputs/apk/debug/android-debug.apk artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk
-          sha256sum artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk > artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk.sha256
-          sha256sum artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk > SHA256SUMS
-          cp SHA256SUMS artifacts/
-
-      - name: Verify Staged APK Package
-        run: |
-          python3 tools/verify_apk.py artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk
-
-      - name: Commit Staged APK and Reports to Branch
-        run: |
+          ./gradlew :core:dependencies --configuration compileClasspath > artifacts/deps.txt 2>&1 || true
+          ./gradlew :core:compileJava --info --debug > artifacts/compile_debug.log 2>&1 || true
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add artifacts/ SHA256SUMS
-          git commit -m "Build: Release Bahrain APK v1.0.0 and verification reports [skip ci]" || echo "No changes to commit"
+          git add artifacts/
+          git commit -m "diagnostics: dump deps and compile debug [skip ci]"
           git push origin arena/f4abc217-temporary6
-
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Bahrain-The-Island-Kingdom-v1.0.0-APK
-          path: artifacts/*
+          exit 1

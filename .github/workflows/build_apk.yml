@@ -46,15 +46,17 @@ jobs:
           gradle wrapper --gradle-version 8.5
           chmod +x gradlew
 
+      - name: Print Dependencies Diagnostics
+        run: |
+          ./gradlew :core:dependencies --configuration compileClasspath
+
       - name: Run Core Subsystem Tests
         run: |
           set -o pipefail
           ./gradlew :core:test 2>&1 | tee test_output.log || {
             mkdir -p artifacts
             echo "=== EXACT COMPILATION ERRORS ===" > artifacts/failure_diagnostics.txt
-            grep -E "error:|cannot find symbol|package .* does not exist" test_output.log >> artifacts/failure_diagnostics.txt 2>&1 || true
-            echo "=== FIRST 100 LINES OF LOG ===" >> artifacts/failure_diagnostics.txt
-            head -n 100 test_output.log >> artifacts/failure_diagnostics.txt
+            cat test_output.log | head -n 150 >> artifacts/failure_diagnostics.txt
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add artifacts/failure_diagnostics.txt

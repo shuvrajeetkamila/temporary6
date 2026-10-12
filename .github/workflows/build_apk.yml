@@ -49,14 +49,16 @@ jobs:
       - name: Run Core Subsystem Tests
         run: |
           set -o pipefail
-          ./gradlew :core:test --stacktrace 2>&1 | tee test_run.log || {
+          ./gradlew :core:test 2>&1 | tee test_run.log || {
             mkdir -p artifacts
-            echo "=== TEST RUN FAILURE ===" > artifacts/test_fail.txt
-            tail -n 120 test_run.log >> artifacts/test_fail.txt
+            echo "=== FAILED TEST XML RESULTS ===" > artifacts/test_fail.txt
+            find core/build/test-results/test -name "*.xml" -exec grep -l "failure" {} + -exec cat {} + >> artifacts/test_fail.txt 2>&1 || true
+            echo "=== GREP TEST RUN LOG ===" >> artifacts/test_fail.txt
+            grep -E "(FAILED|AssertionError|ComparisonFailure|error:)" test_run.log -A 4 -B 2 >> artifacts/test_fail.txt 2>&1 || true
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add artifacts/test_fail.txt
-            git commit -m "diagnostics: test run failure log [skip ci]"
+            git commit -m "diagnostics: exact failed test assertions [skip ci]"
             git push origin arena/f4abc217-temporary6
             exit 1
           }

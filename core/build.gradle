@@ -1,5 +1,12 @@
 apply plugin: "java-library"
 
+def gdxVersion = '1.12.1'
+
+repositories {
+    mavenCentral()
+    google()
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -8,7 +15,7 @@ java {
 dependencies {
     api "com.badlogicgames.gdx:gdx:$gdxVersion"
     api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-    api "org.json:json:20231013"
+    implementation "org.json:json:20231013"
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"

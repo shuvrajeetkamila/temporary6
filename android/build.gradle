@@ -1,5 +1,12 @@
 apply plugin: 'com.android.application'
 
+def gdxVersion = '1.12.1'
+
+repositories {
+    google()
+    mavenCentral()
+}
+
 android {
     namespace 'ai.example.bahrain.islandkingdom'
     compileSdk 34

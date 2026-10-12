@@ -28,19 +28,54 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Inspect libGDX jar after download
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Country Identity Lint
+        run: |
+          python3 tools/country_identity_lint.py
+
+      - name: Verify Geodata Manifests
+        run: |
+          python3 tools/build_geodata_manifests.py
+
+      - name: Generate Gradle Wrapper
+        run: |
+          gradle wrapper --gradle-version 8.5
+          chmod +x gradlew
+
+      - name: Run Core Subsystem Tests
+        run: |
+          ./gradlew :core:test --stacktrace
+
+      - name: Build Android Debug APK
+        run: |
+          ./gradlew :android:assembleDebug --stacktrace
+
+      - name: Stage Universal APK and Checksums
         run: |
           mkdir -p artifacts
-          ./gradlew :core:compileJava || true
-          find /home/runner/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/ -name "*.jar" -ls > artifacts/jars.txt
-          GDX_JAR=$(find /home/runner/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/ -name "gdx-1.12.1.jar" | head -n 1)
-          echo "GDX_JAR path: $GDX_JAR" >> artifacts/jars.txt
-          ls -lh "$GDX_JAR" >> artifacts/jars.txt 2>&1 || true
-          head -c 200 "$GDX_JAR" | xxd >> artifacts/jars.txt 2>&1 || true
-          jar -tf "$GDX_JAR" | grep "Color.class" >> artifacts/jars.txt 2>&1 || true
+          cp android/build/outputs/apk/debug/android-debug.apk artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk
+          sha256sum artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk > artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk.sha256
+          sha256sum artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk > SHA256SUMS
+          cp SHA256SUMS artifacts/
+
+      - name: Verify Staged APK Package
+        run: |
+          python3 tools/verify_apk.py artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk
+
+      - name: Commit Staged APK and Reports to Branch
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add artifacts/jars.txt
-          git commit -m "diagnostics: jar inspection after compile [skip ci]"
+          git add artifacts/ SHA256SUMS
+          git commit -m "Build: Release Bahrain APK v1.0.0 and verification reports [skip ci]" || echo "No changes to commit"
           git push origin arena/f4abc217-temporary6
-          exit 1
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bahrain-The-Island-Kingdom-v1.0.0-APK
+          path: artifacts/*

@@ -15,7 +15,7 @@ import ai.example.bahrain.islandkingdom.water.GulfWaterSystem;
 import ai.example.bahrain.islandkingdom.weather.BahrainWeatherSystem;
 import ai.example.bahrain.islandkingdom.world.*;
 
-import com.badlogicgames.gdx.Game;
+import com.badlogic.gdx.Game;
 
 /**
  * Main Game State and Lifecycle Coordinator for BAHRAIN: THE ISLAND KINGDOM.

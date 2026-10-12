@@ -1,8 +1,8 @@
 package ai.example.bahrain.islandkingdom;
 
 import android.os.Bundle;
-import com.badlogicgames.gdx.backends.android.AndroidApplication;
-import com.badlogicgames.gdx.backends.android.AndroidApplicationConfiguration;
+import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import ai.example.bahrain.islandkingdom.game.BahrainGame;
 
 /**

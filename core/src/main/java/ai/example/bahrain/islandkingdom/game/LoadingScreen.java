@@ -1,8 +1,8 @@
 package ai.example.bahrain.islandkingdom.game;
 
-import com.badlogicgames.gdx.Gdx;
-import com.badlogicgames.gdx.Screen;
-import com.badlogicgames.gdx.graphics.GL20;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 
 /**
  * Staged Loading Screen for BAHRAIN: THE ISLAND KINGDOM.

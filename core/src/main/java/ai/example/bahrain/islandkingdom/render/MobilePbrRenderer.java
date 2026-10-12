@@ -1,7 +1,7 @@
 package ai.example.bahrain.islandkingdom.render;
 
 import ai.example.bahrain.islandkingdom.weather.BahrainWeatherSystem;
-import com.badlogicgames.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Color;
 
 /**
  * Mobile-Realistic PBR-Lite Renderer (Section 14).

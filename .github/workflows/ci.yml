@@ -1,0 +1,15 @@
+name: Test Action
+on:
+  push:
+    branches:
+      - 'arena/**'
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Environment
+        run: |
+          echo "GitHub Actions is working!"
+          java -version

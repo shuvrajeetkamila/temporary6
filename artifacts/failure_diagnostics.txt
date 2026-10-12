@@ -1,0 +1,154 @@
+=== EXACT COMPILATION ERRORS ===
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/render/MobilePbrRenderer.java:4: error: package com.badlogicgames.gdx.graphics does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:3: error: package com.badlogicgames.gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:4: error: package com.badlogicgames.gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:5: error: package com.badlogicgames.gdx.graphics does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:11: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/BahrainGame.java:18: error: package com.badlogicgames.gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/BahrainGame.java:24: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:4: error: package com.badlogicgames.gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:5: error: package com.badlogicgames.gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:6: error: package com.badlogicgames.gdx.graphics does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:12: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:3: error: package com.badlogicgames.gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:4: error: package com.badlogicgames.gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:5: error: package com.badlogicgames.gdx.graphics does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:12: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:19: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:21: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:23: error: package Gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:24: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:24: error: package Gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:27: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:28: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:29: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:30: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:31: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/BahrainGame.java:48: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/BahrainGame.java:88: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/BahrainGame.java:126: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/BahrainGame.java:128: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:20: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:23: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:33: error: package Gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:34: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:34: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:34: error: package Gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:42: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:43: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:44: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:45: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:46: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:22: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:32: error: package Gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:36: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:38: error: package Gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:39: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:39: error: package Gdx does not exist
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:44: error: cannot find symbol
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:48: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:49: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:50: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:51: error: method does not override or implement a method from a supertype
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:52: error: method does not override or implement a method from a supertype
+=== FIRST 100 LINES OF LOG ===
+Fetching distribution.
+Downloading https://services.gradle.org/distributions/gradle-8.5-bin.zip
+............10%.............20%............30%.............40%.............50%............60%.............70%.............80%............90%.............100%
+
+Welcome to Gradle 8.5!
+
+Here are the highlights of this release:
+ - Support for running on Java 21
+ - Faster first use with Kotlin DSL
+ - Improved error and warning messages
+
+For more details see https://docs.gradle.org/8.5/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Task :core:compileJava FAILED
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/render/MobilePbrRenderer.java:4: error: package com.badlogicgames.gdx.graphics does not exist
+import com.badlogicgames.gdx.graphics.Color;
+                                     ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:3: error: package com.badlogicgames.gdx does not exist
+import com.badlogicgames.gdx.Gdx;
+                            ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:4: error: package com.badlogicgames.gdx does not exist
+import com.badlogicgames.gdx.Screen;
+                            ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:5: error: package com.badlogicgames.gdx.graphics does not exist
+import com.badlogicgames.gdx.graphics.GL20;
+                                     ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:11: error: cannot find symbol
+public class SettingsScreen implements Screen {
+                                       ^
+  symbol: class Screen
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/BahrainGame.java:18: error: package com.badlogicgames.gdx does not exist
+import com.badlogicgames.gdx.Game;
+                            ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/BahrainGame.java:24: error: cannot find symbol
+public class BahrainGame extends Game {
+                                 ^
+  symbol: class Game
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:4: error: package com.badlogicgames.gdx does not exist
+import com.badlogicgames.gdx.Gdx;
+                            ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:5: error: package com.badlogicgames.gdx does not exist
+import com.badlogicgames.gdx.Screen;
+                            ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:6: error: package com.badlogicgames.gdx.graphics does not exist
+import com.badlogicgames.gdx.graphics.GL20;
+                                     ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:12: error: cannot find symbol
+public class GameplayScreen implements Screen {
+                                       ^
+  symbol: class Screen
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:3: error: package com.badlogicgames.gdx does not exist
+import com.badlogicgames.gdx.Gdx;
+                            ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:4: error: package com.badlogicgames.gdx does not exist
+import com.badlogicgames.gdx.Screen;
+                            ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:5: error: package com.badlogicgames.gdx.graphics does not exist
+import com.badlogicgames.gdx.graphics.GL20;
+                                     ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/LoadingScreen.java:12: error: cannot find symbol
+public class LoadingScreen implements Screen {
+                                      ^
+  symbol: class Screen
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:19: error: method does not override or implement a method from a supertype
+    @Override public void show() {}
+    ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:21: error: method does not override or implement a method from a supertype
+    @Override
+    ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:23: error: package Gdx does not exist
+        Gdx.gl.glClearColor(0.05f, 0.05f, 0.08f, 1.0f);
+           ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:24: error: cannot find symbol
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                       ^
+  symbol:   variable GL20
+  location: class SettingsScreen
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:24: error: package Gdx does not exist
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+           ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:27: error: method does not override or implement a method from a supertype
+    @Override public void resize(int width, int height) {}
+    ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:28: error: method does not override or implement a method from a supertype
+    @Override public void pause() {}
+    ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:29: error: method does not override or implement a method from a supertype
+    @Override public void resume() {}
+    ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:30: error: method does not override or implement a method from a supertype
+    @Override public void hide() {}
+    ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/SettingsScreen.java:31: error: method does not override or implement a method from a supertype
+    @Override public void dispose() {}
+    ^
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/BahrainGame.java:48: error: method does not override or implement a method from a supertype
+    @Override
+    ^

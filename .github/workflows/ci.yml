@@ -1,4 +1,4 @@
-name: Test Artifact
+name: Test Git Push from Action
 on:
   push:
     branches:
@@ -6,13 +6,16 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Create Test File
+      - name: Create Test File and Push
         run: |
-          mkdir -p output
-          echo "Test artifact content 12345" > output/test.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-artifact
-          path: output/test.txt
+          mkdir -p artifacts
+          echo "Test content from action runner" > artifacts/test_from_runner.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add artifacts/test_from_runner.txt
+          git commit -m "Add test file from runner [skip ci]"
+          git push

@@ -1,15 +1,18 @@
-name: Test Action
+name: Test Artifact
 on:
   push:
     branches:
       - 'arena/**'
-      - main
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify Environment
+      - name: Create Test File
         run: |
-          echo "GitHub Actions is working!"
-          java -version
+          mkdir -p output
+          echo "Test artifact content 12345" > output/test.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact
+          path: output/test.txt

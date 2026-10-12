@@ -1,0 +1,37 @@
+{
+  "schema_version": "2.0.0",
+  "project": "BAHRAIN: THE ISLAND KINGDOM",
+  "country_code": "BHR",
+  "world_epoch": "2026-10",
+  "master_crs": "EPSG:32639",
+  "total_governorates": 4,
+  "total_sovereign_islands": 21,
+  "total_causeways": 7,
+  "attribution": "© OpenStreetMap contributors",
+  "floating_origin_pivot": {
+    "name": "Bab Al Bahrain",
+    "easting_m": 457614.2,
+    "northing_m": 2902078.4,
+    "elevation_m": 2.5
+  },
+  "subsystems": [
+    "MASTER_CRS",
+    "FLOATING_ORIGIN",
+    "GOVERNORATE_MANAGER",
+    "ISLAND_REGISTRY",
+    "CAUSEWAY_MANAGER",
+    "CHUNK_STREAMER",
+    "TERRAIN_BIOMES_9",
+    "GULF_WATER_TIDES",
+    "BAHRAIN_WEATHER_SHAMAL",
+    "PHYSICS_60HZ_FIXED",
+    "HUMAN_CAPSULE_HEAT",
+    "CAR_4X4_SUSPENSION_SAND",
+    "BOAT_DHOW_12PT_BUOYANCY",
+    "HELI_ROTOR_BROWNOUT",
+    "PLANE_AIRFOIL_AIRPORT",
+    "RIGHT_HAND_TRAFFIC_RHT",
+    "ARABIC_BILINGUAL_SHAPING",
+    "THERMAL_30_20_15_PACING"
+  ]
+}

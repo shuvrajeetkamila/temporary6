@@ -1,0 +1,211 @@
+{
+  "manifest_version": "2.0.0",
+  "epoch": "2026-10",
+  "crs": "EPSG:32639",
+  "total_causeways": 7,
+  "causeways": [
+    {
+      "causeway_id": "csw_king_fahd",
+      "name_en": "King Fahd Causeway (Bahrain Section)",
+      "name_ar": "جسر الملك فهد (الجانب البحريني)",
+      "connects": [
+        "Jasra / Northern Governorate",
+        "Passport Island"
+      ],
+      "total_length_m": 12500.0,
+      "deck_elevation_m": 12.0,
+      "max_ship_clearance_m": 15.0,
+      "lanes_each_direction": 2,
+      "start_wgs84": [
+        50.45,
+        26.175
+      ],
+      "end_wgs84": [
+        50.325,
+        26.183
+      ],
+      "start_utm39n_m": [
+        445038.57,
+        2895121.41
+      ],
+      "end_utm39n_m": [
+        432551.62,
+        2896036.39
+      ]
+    },
+    {
+      "causeway_id": "csw_shaikh_isa",
+      "name_en": "Shaikh Isa bin Salman Causeway",
+      "name_ar": "جسر الشيخ عيسى بن سلمان",
+      "connects": [
+        "Diplomatic Area / Manama",
+        "Busaiteen / Muharraq"
+      ],
+      "total_length_m": 2500.0,
+      "deck_elevation_m": 15.0,
+      "max_ship_clearance_m": 12.0,
+      "lanes_each_direction": 4,
+      "start_wgs84": [
+        50.59,
+        26.242
+      ],
+      "end_wgs84": [
+        50.605,
+        26.262
+      ],
+      "start_utm39n_m": [
+        459052.38,
+        2902516.19
+      ],
+      "end_utm39n_m": [
+        460557.23,
+        2904728.89
+      ]
+    },
+    {
+      "causeway_id": "csw_shaikh_hamad",
+      "name_en": "Shaikh Hamad Causeway",
+      "name_ar": "جسر الشيخ حمد",
+      "connects": [
+        "Manama Old Core",
+        "Muharraq Historic Core"
+      ],
+      "total_length_m": 1100.0,
+      "deck_elevation_m": 8.0,
+      "max_ship_clearance_m": 6.0,
+      "lanes_each_direction": 3,
+      "start_wgs84": [
+        50.589,
+        26.236
+      ],
+      "end_wgs84": [
+        50.598,
+        26.242
+      ],
+      "start_utm39n_m": [
+        458950.4,
+        2901851.85
+      ],
+      "end_utm39n_m": [
+        459851.36,
+        2902514.96
+      ]
+    },
+    {
+      "causeway_id": "csw_khalifa",
+      "name_en": "Shaikh Khalifa bin Salman Causeway",
+      "name_ar": "جسر الشيخ خليفة بن سلمان",
+      "connects": [
+        "Juffair / Umm Al Hassam",
+        "Hidd / Khalifa Port"
+      ],
+      "total_length_m": 4040.0,
+      "deck_elevation_m": 24.0,
+      "max_ship_clearance_m": 18.0,
+      "lanes_each_direction": 3,
+      "start_wgs84": [
+        50.608,
+        26.205
+      ],
+      "end_wgs84": [
+        50.648,
+        26.225
+      ],
+      "start_utm39n_m": [
+        460837.71,
+        2898415.73
+      ],
+      "end_utm39n_m": [
+        464839.9,
+        2900625.07
+      ]
+    },
+    {
+      "causeway_id": "csw_sitra",
+      "name_en": "Sitra Causeway Bridges",
+      "name_ar": "جسور جسر سترة",
+      "connects": [
+        "Umm Al Hassam / Nabih Saleh",
+        "Sitra Island"
+      ],
+      "total_length_m": 3200.0,
+      "deck_elevation_m": 10.0,
+      "max_ship_clearance_m": 8.0,
+      "lanes_each_direction": 3,
+      "start_wgs84": [
+        50.595,
+        26.195
+      ],
+      "end_wgs84": [
+        50.612,
+        26.17
+      ],
+      "start_utm39n_m": [
+        459535.49,
+        2897310.2
+      ],
+      "end_utm39n_m": [
+        461225.74,
+        2894538.94
+      ]
+    },
+    {
+      "causeway_id": "csw_durrat_bridges",
+      "name_en": "Durrat Al Bahrain Crescent Bridges",
+      "name_ar": "جسور درة البحرين",
+      "connects": [
+        "Southern Coast",
+        "Durrat Islands"
+      ],
+      "total_length_m": 2800.0,
+      "deck_elevation_m": 7.0,
+      "max_ship_clearance_m": 5.0,
+      "lanes_each_direction": 2,
+      "start_wgs84": [
+        50.58,
+        25.85
+      ],
+      "end_wgs84": [
+        50.6,
+        25.83
+      ],
+      "start_utm39n_m": [
+        457913.91,
+        2859105.05
+      ],
+      "end_utm39n_m": [
+        459911.29,
+        2856887.15
+      ]
+    },
+    {
+      "causeway_id": "csw_amwaj",
+      "name_en": "Amwaj Access Causeway",
+      "name_ar": "جسر مدخل أمواج",
+      "connects": [
+        "Galali / Muharraq",
+        "Amwaj Islands"
+      ],
+      "total_length_m": 1200.0,
+      "deck_elevation_m": 6.0,
+      "max_ship_clearance_m": 4.5,
+      "lanes_each_direction": 2,
+      "start_wgs84": [
+        50.65,
+        26.28
+      ],
+      "end_wgs84": [
+        50.66,
+        26.29
+      ],
+      "start_utm39n_m": [
+        465056.14,
+        2906716.01
+      ],
+      "end_utm39n_m": [
+        466057.45,
+        2907822.19
+      ]
+    }
+  ]
+}

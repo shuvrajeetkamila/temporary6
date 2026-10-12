@@ -1,0 +1,269 @@
+{
+  "type": "FeatureCollection",
+  "name": "BAHRAIN_GOVERNORATES",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "governorate_id": "GOV-01",
+        "code": "CAP",
+        "name_en": "Capital Governorate",
+        "name_ar": "محافظة العاصمة",
+        "capital_city": "Manama",
+        "capital_city_ar": "المنامة",
+        "center_wgs84": [
+          50.5876,
+          26.2235
+        ],
+        "center_utm39n_m": [
+          458806.16,
+          2900467.7
+        ],
+        "area_km2": 79.8,
+        "key_districts": [
+          "Manama",
+          "Juffair",
+          "Adliya",
+          "Seef",
+          "Diplomatic Area",
+          "Bahrain Bay",
+          "Nabih Saleh",
+          "Sanabis",
+          "Zinj"
+        ],
+        "min_easting_m": 451063.74,
+        "max_easting_m": 463029.3,
+        "min_northing_m": 2896197.58,
+        "max_northing_m": 2902862.12
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              50.51,
+              26.245
+            ],
+            [
+              50.625,
+              26.245
+            ],
+            [
+              50.63,
+              26.185
+            ],
+            [
+              50.52,
+              26.185
+            ],
+            [
+              50.51,
+              26.245
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "governorate_id": "GOV-02",
+        "code": "MUH",
+        "name_en": "Muharraq Governorate",
+        "name_ar": "محافظة المحرق",
+        "capital_city": "Muharraq",
+        "capital_city_ar": "المحرق",
+        "center_wgs84": [
+          50.635,
+          26.265
+        ],
+        "center_utm39n_m": [
+          463553.85,
+          2905056.8
+        ],
+        "area_km2": 110.5,
+        "key_districts": [
+          "Muharraq City",
+          "Busaiteen",
+          "Arad",
+          "Hidd",
+          "Galali",
+          "Amwaj Islands",
+          "Diyar Al Muharraq",
+          "Dilmunia",
+          "Bahrain International Airport"
+        ],
+        "min_easting_m": 459583.99,
+        "max_easting_m": 472058.14,
+        "min_northing_m": 2898955.21,
+        "max_northing_m": 2912815.2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              50.595,
+              26.335
+            ],
+            [
+              50.72,
+              26.335
+            ],
+            [
+              50.72,
+              26.21
+            ],
+            [
+              50.605,
+              26.21
+            ],
+            [
+              50.595,
+              26.335
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "governorate_id": "GOV-03",
+        "code": "NOR",
+        "name_en": "Northern Governorate",
+        "name_ar": "المحافظة الشمالية",
+        "capital_city": "Saar / Budaiya",
+        "capital_city_ar": "سار / البديع",
+        "center_wgs84": [
+          50.475,
+          26.185
+        ],
+        "center_utm39n_m": [
+          447541.34,
+          2896223.83
+        ],
+        "area_km2": 146.0,
+        "key_districts": [
+          "Budaiya",
+          "Saar",
+          "Jasra",
+          "Janabiya",
+          "Diraz",
+          "Barbar",
+          "Bani Jamra",
+          "Hamala",
+          "Al Malikiyah",
+          "Qal'at al-Bahrain",
+          "King Fahd Causeway Approach",
+          "Umm an Nasan",
+          "Jidda"
+        ],
+        "min_easting_m": 441003.61,
+        "max_easting_m": 454059.88,
+        "min_northing_m": 2886798.08,
+        "max_northing_m": 2902882.65
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              50.41,
+              26.245
+            ],
+            [
+              50.54,
+              26.245
+            ],
+            [
+              50.54,
+              26.1
+            ],
+            [
+              50.41,
+              26.1
+            ],
+            [
+              50.41,
+              26.245
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "governorate_id": "GOV-04",
+        "code": "SOU",
+        "name_en": "Southern Governorate",
+        "name_ar": "المحافظة الجنوبية",
+        "capital_city": "Awali / Riffa",
+        "capital_city_ar": "عوالي / الرفاع",
+        "center_wgs84": [
+          50.56,
+          25.95
+        ],
+        "center_utm39n_m": [
+          455946.93,
+          2870182.7
+        ],
+        "area_km2": 443.0,
+        "key_districts": [
+          "East Riffa",
+          "West Riffa",
+          "Isa Town",
+          "Hamad Town",
+          "A'ali",
+          "Awali",
+          "Sakhir",
+          "Zallaq",
+          "Jabal ad Dukhan",
+          "Tree of Life",
+          "Askar",
+          "Jaww",
+          "Durrat Al Bahrain",
+          "Hawar Islands"
+        ],
+        "min_easting_m": 444725.83,
+        "max_easting_m": 489950.25,
+        "min_northing_m": 2820315.71,
+        "max_northing_m": 2893460.16
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              50.45,
+              26.16
+            ],
+            [
+              50.65,
+              26.16
+            ],
+            [
+              50.9,
+              25.5
+            ],
+            [
+              50.45,
+              25.5
+            ],
+            [
+              50.45,
+              26.16
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

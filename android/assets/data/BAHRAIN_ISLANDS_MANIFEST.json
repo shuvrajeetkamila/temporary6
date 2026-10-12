@@ -1,0 +1,400 @@
+{
+  "manifest_version": "2.0.0",
+  "epoch": "2026-10",
+  "crs": "EPSG:32639",
+  "total_islands": 21,
+  "islands": [
+    {
+      "island_id": "isl_main_bahrain",
+      "name_en": "Main Bahrain Island",
+      "name_ar": "جزيرة البحرين",
+      "governorate_id": "MULTI",
+      "category": "MAIN_ISLAND",
+      "lat": 26.05,
+      "lon": 50.55,
+      "approx_area_km2": 591.0,
+      "elevation_max_m": 134.0,
+      "terrain_classes": [
+        "LIMESTONE_PLAIN",
+        "ROCKY_RELIEF",
+        "SAND_SHEET",
+        "SABKHA",
+        "DATE_PALM_GARDEN",
+        "URBAN"
+      ],
+      "has_player_spawn": true,
+      "utm39n_easting_m": 454983.84,
+      "utm39n_northing_m": 2881258.99
+    },
+    {
+      "island_id": "isl_muharraq",
+      "name_en": "Muharraq Island",
+      "name_ar": "جزيرة المحرق",
+      "governorate_id": "GOV-02",
+      "category": "INHABITED_MAJOR",
+      "lat": 26.255,
+      "lon": 50.62,
+      "approx_area_km2": 56.0,
+      "elevation_max_m": 10.0,
+      "terrain_classes": [
+        "HERITAGE_URBAN",
+        "AIRPORT_INFRASTRUCTURE",
+        "COASTAL_FLAT"
+      ],
+      "has_player_spawn": true,
+      "utm39n_easting_m": 462052.8,
+      "utm39n_northing_m": 2903951.43
+    },
+    {
+      "island_id": "isl_sitra",
+      "name_en": "Sitra Island",
+      "name_ar": "جزيرة سترة",
+      "governorate_id": "GOV-01",
+      "category": "INHABITED_INDUSTRIAL",
+      "lat": 26.155,
+      "lon": 50.615,
+      "approx_area_km2": 24.5,
+      "elevation_max_m": 12.0,
+      "terrain_classes": [
+        "URBAN_RESIDENTIAL",
+        "INDUSTRIAL_PORT",
+        "MUD_FLAT"
+      ],
+      "has_player_spawn": true,
+      "utm39n_easting_m": 461520.62,
+      "utm39n_northing_m": 2892877.28
+    },
+    {
+      "island_id": "isl_nabih_saleh",
+      "name_en": "Nabih Saleh Island",
+      "name_ar": "جزيرة نبيه صالح",
+      "governorate_id": "GOV-01",
+      "category": "INHABITED_GARDEN",
+      "lat": 26.188,
+      "lon": 50.584,
+      "approx_area_km2": 1.3,
+      "elevation_max_m": 5.0,
+      "terrain_classes": [
+        "PALM_GROVE",
+        "VILLAGE_RESIDENTIAL",
+        "COASTAL_SHALLOW"
+      ],
+      "has_player_spawn": true,
+      "utm39n_easting_m": 458433.96,
+      "utm39n_northing_m": 2896536.67
+    },
+    {
+      "island_id": "isl_umm_an_nasan",
+      "name_en": "Umm an Nasan Island",
+      "name_ar": "جزيرة أم النعسان",
+      "governorate_id": "GOV-03",
+      "category": "WESTERN_RESTRICTED",
+      "lat": 26.143,
+      "lon": 50.4,
+      "approx_area_km2": 20.0,
+      "elevation_max_m": 9.0,
+      "terrain_classes": [
+        "LIMESTONE_DESERT",
+        "SABKHA",
+        "CAUSEWAY_TRANSIT"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 440025.61,
+      "utm39n_northing_m": 2891588.26
+    },
+    {
+      "island_id": "isl_jidda",
+      "name_en": "Jidda Island",
+      "name_ar": "جزيرة جدة",
+      "governorate_id": "GOV-03",
+      "category": "WESTERN_CLIFF",
+      "lat": 26.195,
+      "lon": 50.4,
+      "approx_area_km2": 0.48,
+      "elevation_max_m": 12.0,
+      "terrain_classes": [
+        "LIMESTONE_CLIFF",
+        "ROCKY_SHORE"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 440052.21,
+      "utm39n_northing_m": 2897347.31
+    },
+    {
+      "island_id": "isl_hawar_main",
+      "name_en": "Hawar Main Island",
+      "name_ar": "جزيرة حوار الرئيسية",
+      "governorate_id": "GOV-04",
+      "category": "REMOTE_ARCHIPELAGO",
+      "lat": 25.66,
+      "lon": 50.76,
+      "approx_area_km2": 41.0,
+      "elevation_max_m": 22.0,
+      "terrain_classes": [
+        "LIMESTONE_DESERT",
+        "SABKHA",
+        "ECOLOGICAL_PROTECTED",
+        "PROTECTED_SHALLOWS"
+      ],
+      "has_player_spawn": true,
+      "utm39n_easting_m": 475912.6,
+      "utm39n_northing_m": 2838042.37
+    },
+    {
+      "island_id": "isl_suwad_shamaliyah",
+      "name_en": "Suwad ash Shamaliyah",
+      "name_ar": "جزيرة سواد الشمالية",
+      "governorate_id": "GOV-04",
+      "category": "REMOTE_ISLET",
+      "lat": 25.68,
+      "lon": 50.795,
+      "approx_area_km2": 3.2,
+      "elevation_max_m": 5.0,
+      "terrain_classes": [
+        "SABKHA",
+        "BIRD_SANCTUARY",
+        "TIDAL_FLAT"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 479428.79,
+      "utm39n_northing_m": 2840254.31
+    },
+    {
+      "island_id": "isl_suwad_janubiyah",
+      "name_en": "Suwad al Janubiyah",
+      "name_ar": "جزيرة سواد الجنوبية",
+      "governorate_id": "GOV-04",
+      "category": "REMOTE_ISLET",
+      "lat": 25.625,
+      "lon": 50.81,
+      "approx_area_km2": 9.8,
+      "elevation_max_m": 7.0,
+      "terrain_classes": [
+        "SABKHA",
+        "BIRD_SANCTUARY",
+        "MUD_FLAT"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 480925.26,
+      "utm39n_northing_m": 2834162.59
+    },
+    {
+      "island_id": "isl_rubud_gharbiyah",
+      "name_en": "Rubud al Gharbiyah",
+      "name_ar": "جزيرة ربض الغربية",
+      "governorate_id": "GOV-04",
+      "category": "REMOTE_ISLET",
+      "lat": 25.72,
+      "lon": 50.72,
+      "approx_area_km2": 1.7,
+      "elevation_max_m": 4.0,
+      "terrain_classes": [
+        "REEF_ISLET",
+        "SEABIRD_COLONY"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 471912.09,
+      "utm39n_northing_m": 2844690.56
+    },
+    {
+      "island_id": "isl_rubud_sharqiyah",
+      "name_en": "Rubud ash Sharqiyah",
+      "name_ar": "جزيرة ربض الشرقية",
+      "governorate_id": "GOV-04",
+      "category": "REMOTE_ISLET",
+      "lat": 25.725,
+      "lon": 50.74,
+      "approx_area_km2": 0.4,
+      "elevation_max_m": 3.0,
+      "terrain_classes": [
+        "REEF_ISLET",
+        "SEABIRD_COLONY"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 473919.47,
+      "utm39n_northing_m": 2845242.28
+    },
+    {
+      "island_id": "isl_muhazwarah",
+      "name_en": "Muhazwarah Island",
+      "name_ar": "جزيرة محزورة",
+      "governorate_id": "GOV-04",
+      "category": "REMOTE_ISLET",
+      "lat": 25.66,
+      "lon": 50.7,
+      "approx_area_km2": 1.2,
+      "elevation_max_m": 6.0,
+      "terrain_classes": [
+        "LIMESTONE_OUTCROP",
+        "SAND_SPIT"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 469890.72,
+      "utm39n_northing_m": 2838048.27
+    },
+    {
+      "island_id": "isl_ajirah",
+      "name_en": "Ajirah Island",
+      "name_ar": "جزيرة عغيرة",
+      "governorate_id": "GOV-04",
+      "category": "REMOTE_ISLET",
+      "lat": 25.74,
+      "lon": 50.815,
+      "approx_area_km2": 0.2,
+      "elevation_max_m": 3.0,
+      "terrain_classes": [
+        "REEF_ROCK"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 481445.05,
+      "utm39n_northing_m": 2846897.27
+    },
+    {
+      "island_id": "isl_amwaj",
+      "name_en": "Amwaj Islands",
+      "name_ar": "جزر أمواج",
+      "governorate_id": "GOV-02",
+      "category": "RECLAIMED_URBAN",
+      "lat": 26.295,
+      "lon": 50.665,
+      "approx_area_km2": 4.3,
+      "elevation_max_m": 6.0,
+      "terrain_classes": [
+        "RECLAIMED_PAD",
+        "CANAL_WATERFRONT",
+        "MARINA_BASIN"
+      ],
+      "has_player_spawn": true,
+      "utm39n_easting_m": 466558.04,
+      "utm39n_northing_m": 2908375.29
+    },
+    {
+      "island_id": "isl_diyar",
+      "name_en": "Diyar Al Muharraq",
+      "name_ar": "ديار المحرق",
+      "governorate_id": "GOV-02",
+      "category": "RECLAIMED_URBAN",
+      "lat": 26.315,
+      "lon": 50.625,
+      "approx_area_km2": 12.0,
+      "elevation_max_m": 7.0,
+      "terrain_classes": [
+        "ENGINEERED_PAD",
+        "MODERN_HIGHWAY",
+        "SEAWALL_COAST"
+      ],
+      "has_player_spawn": true,
+      "utm39n_easting_m": 462571.36,
+      "utm39n_northing_m": 2910595.71
+    },
+    {
+      "island_id": "isl_dilmunia",
+      "name_en": "Dilmunia Island",
+      "name_ar": "جزيرة دلمونيا",
+      "governorate_id": "GOV-02",
+      "category": "RECLAIMED_URBAN",
+      "lat": 26.275,
+      "lon": 50.675,
+      "approx_area_km2": 1.25,
+      "elevation_max_m": 6.0,
+      "terrain_classes": [
+        "RECLAIMED_PAD",
+        "CANAL_NETWORK"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 467550.75,
+      "utm39n_northing_m": 2906159.04
+    },
+    {
+      "island_id": "isl_durrat",
+      "name_en": "Durrat Al Bahrain",
+      "name_ar": "درة البحرين",
+      "governorate_id": "GOV-04",
+      "category": "RECLAIMED_ATOLL",
+      "lat": 25.83,
+      "lon": 50.59,
+      "approx_area_km2": 21.0,
+      "elevation_max_m": 5.0,
+      "terrain_classes": [
+        "CRESCENT_PAD",
+        "ATOLL_LAGOON",
+        "BRIDGED_WATERWAY"
+      ],
+      "has_player_spawn": true,
+      "utm39n_easting_m": 458909.06,
+      "utm39n_northing_m": 2856888.64
+    },
+    {
+      "island_id": "isl_bahrain_bay",
+      "name_en": "Bahrain Bay",
+      "name_ar": "خليج البحرين",
+      "governorate_id": "GOV-01",
+      "category": "RECLAIMED_URBAN",
+      "lat": 26.248,
+      "lon": 50.581,
+      "approx_area_km2": 0.45,
+      "elevation_max_m": 6.0,
+      "terrain_classes": [
+        "COMMERCIAL_PODIUM",
+        "WATERFRONT_PROMENADE"
+      ],
+      "has_player_spawn": true,
+      "utm39n_easting_m": 458155.67,
+      "utm39n_northing_m": 2903182.11
+    },
+    {
+      "island_id": "isl_reef",
+      "name_en": "Reef Island",
+      "name_ar": "جزيرة الريف",
+      "governorate_id": "GOV-01",
+      "category": "RECLAIMED_URBAN",
+      "lat": 26.243,
+      "lon": 50.563,
+      "approx_area_km2": 0.65,
+      "elevation_max_m": 5.0,
+      "terrain_classes": [
+        "RESIDENTIAL_MARINA",
+        "SEAWALL_EDGE"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 456356.17,
+      "utm39n_northing_m": 2902631.29
+    },
+    {
+      "island_id": "isl_causeway_border",
+      "name_en": "Passport Island (Bahrain Half)",
+      "name_ar": "جزيرة الجوازات (الجانب البحريني)",
+      "governorate_id": "GOV-03",
+      "category": "CAUSEWAY_BORDER",
+      "lat": 26.183,
+      "lon": 50.325,
+      "approx_area_km2": 0.33,
+      "elevation_max_m": 6.0,
+      "terrain_classes": [
+        "HIGHWAY_EMBANKMENT",
+        "PUBLIC_EXTERIOR_BORDER"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 432551.62,
+      "utm39n_northing_m": 2896036.39
+    },
+    {
+      "island_id": "isl_khalifa_causeway_isle",
+      "name_en": "Prince Khalifa Causeway Island",
+      "name_ar": "جزيرة جسر الشيخ خليفة",
+      "governorate_id": "GOV-01",
+      "category": "CAUSEWAY_INTERCHANGE",
+      "lat": 26.216,
+      "lon": 50.627,
+      "approx_area_km2": 0.22,
+      "elevation_max_m": 5.0,
+      "terrain_classes": [
+        "HIGHWAY_RAMP",
+        "SEAWALL_COAST"
+      ],
+      "has_player_spawn": false,
+      "utm39n_easting_m": 462739.4,
+      "utm39n_northing_m": 2899631.21
+    }
+  ]
+}

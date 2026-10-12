@@ -48,11 +48,33 @@ jobs:
 
       - name: Run Core Subsystem Tests
         run: |
-          ./gradlew :core:test --stacktrace
+          set -o pipefail
+          ./gradlew :core:test --stacktrace 2>&1 | tee test_run.log || {
+            mkdir -p artifacts
+            echo "=== TEST RUN FAILURE ===" > artifacts/test_fail.txt
+            tail -n 120 test_run.log >> artifacts/test_fail.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add artifacts/test_fail.txt
+            git commit -m "diagnostics: test run failure log [skip ci]"
+            git push origin arena/f4abc217-temporary6
+            exit 1
+          }
 
       - name: Build Android Debug APK
         run: |
-          ./gradlew :android:assembleDebug --stacktrace
+          set -o pipefail
+          ./gradlew :android:assembleDebug --stacktrace 2>&1 | tee build_run.log || {
+            mkdir -p artifacts
+            echo "=== ANDROID BUILD FAILURE ===" > artifacts/build_fail.txt
+            tail -n 120 build_run.log >> artifacts/build_fail.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add artifacts/build_fail.txt
+            git commit -m "diagnostics: android build failure log [skip ci]"
+            git push origin arena/f4abc217-temporary6
+            exit 1
+          }
 
       - name: Stage Universal APK and Checksums
         run: |

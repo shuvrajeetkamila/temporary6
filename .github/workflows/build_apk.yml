@@ -28,17 +28,19 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Inspect libGDX jar
+      - name: Inspect libGDX jar after download
         run: |
           mkdir -p artifacts
-          ./gradlew :core:dependencies --configuration compileClasspath
+          ./gradlew :core:compileJava || true
           find /home/runner/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/ -name "*.jar" -ls > artifacts/jars.txt
-          GDX_JAR=$(find /home/runner/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/ -name "gdx-1.12.1.jar" | head -n 1)
-          echo "GDX_JAR: $GDX_JAR" >> artifacts/jars.txt
-          jar -tf "$GDX_JAR" | head -n 30 >> artifacts/jars.txt 2>&1 || true
+          GDX_JAR=$(find /home/runner/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/ -name "gdx-1.12.1.jar" | head -n 1)
+          echo "GDX_JAR path: $GDX_JAR" >> artifacts/jars.txt
+          ls -lh "$GDX_JAR" >> artifacts/jars.txt 2>&1 || true
+          head -c 200 "$GDX_JAR" | xxd >> artifacts/jars.txt 2>&1 || true
+          jar -tf "$GDX_JAR" | grep "Color.class" >> artifacts/jars.txt 2>&1 || true
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add artifacts/jars.txt
-          git commit -m "diagnostics: jar inspection [skip ci]"
+          git commit -m "diagnostics: jar inspection after compile [skip ci]"
           git push origin arena/f4abc217-temporary6
           exit 1

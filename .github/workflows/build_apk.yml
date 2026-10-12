@@ -28,32 +28,17 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Run Country Identity Lint
-        run: |
-          python3 tools/country_identity_lint.py
-
-      - name: Verify Geodata Manifests
-        run: |
-          python3 tools/build_geodata_manifests.py
-
-      - name: Generate Gradle Wrapper
-        run: |
-          gradle wrapper --gradle-version 8.5
-          chmod +x gradlew
-
-      - name: Dump Dependency Diagnostics
+      - name: Inspect libGDX jar
         run: |
           mkdir -p artifacts
-          ./gradlew :core:dependencies --configuration compileClasspath > artifacts/deps.txt 2>&1 || true
-          ./gradlew :core:compileJava --info --debug > artifacts/compile_debug.log 2>&1 || true
+          ./gradlew :core:dependencies --configuration compileClasspath
+          find /home/runner/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/ -name "*.jar" -ls > artifacts/jars.txt
+          GDX_JAR=$(find /home/runner/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/ -name "gdx-1.12.1.jar" | head -n 1)
+          echo "GDX_JAR: $GDX_JAR" >> artifacts/jars.txt
+          jar -tf "$GDX_JAR" | head -n 30 >> artifacts/jars.txt 2>&1 || true
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add artifacts/
-          git commit -m "diagnostics: dump deps and compile debug [skip ci]"
+          git add artifacts/jars.txt
+          git commit -m "diagnostics: jar inspection [skip ci]"
           git push origin arena/f4abc217-temporary6
           exit 1

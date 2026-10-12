@@ -23,7 +23,7 @@
         ],
         "center_utm39n_m": [
           458806.16,
-          2900467.7
+          2900500.94
         ],
         "area_km2": 79.8,
         "key_districts": [
@@ -39,8 +39,8 @@
         ],
         "min_easting_m": 451063.74,
         "max_easting_m": 463029.3,
-        "min_northing_m": 2896197.58,
-        "max_northing_m": 2902862.12
+        "min_northing_m": 2896224.36,
+        "max_northing_m": 2902909.04
       },
       "geometry": {
         "type": "Polygon",
@@ -85,7 +85,7 @@
         ],
         "center_utm39n_m": [
           463553.85,
-          2905056.8
+          2905082.82
         ],
         "area_km2": 110.5,
         "key_districts": [
@@ -101,8 +101,8 @@
         ],
         "min_easting_m": 459583.99,
         "max_easting_m": 472058.14,
-        "min_northing_m": 2898955.21,
-        "max_northing_m": 2912815.2
+        "min_northing_m": 2898970.54,
+        "max_northing_m": 2912847.2
       },
       "geometry": {
         "type": "Polygon",
@@ -147,7 +147,7 @@
         ],
         "center_utm39n_m": [
           447541.34,
-          2896223.83
+          2896277.74
         ],
         "area_km2": 146.0,
         "key_districts": [
@@ -167,8 +167,8 @@
         ],
         "min_easting_m": 441003.61,
         "max_easting_m": 454059.88,
-        "min_northing_m": 2886798.08,
-        "max_northing_m": 2902882.65
+        "min_northing_m": 2886839.52,
+        "max_northing_m": 2902950.66
       },
       "geometry": {
         "type": "Polygon",
@@ -213,7 +213,7 @@
         ],
         "center_utm39n_m": [
           455946.93,
-          2870182.7
+          2870220.69
         ],
         "area_km2": 443.0,
         "key_districts": [
@@ -234,8 +234,8 @@
         ],
         "min_easting_m": 444725.83,
         "max_easting_m": 489950.25,
-        "min_northing_m": 2820315.71,
-        "max_northing_m": 2893460.16
+        "min_northing_m": 2820317.68,
+        "max_northing_m": 2893519.34
       },
       "geometry": {
         "type": "Polygon",

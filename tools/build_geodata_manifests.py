@@ -41,18 +41,15 @@ def latlon_to_utm39n(lat, lon):
     tan_phi = math.tan(phi)
 
     nu = A / math.sqrt(1.0 - E2 * sin_phi * sin_phi)
-    psi = nu / (A * (1.0 - E2) / ((1.0 - E2 * sin_phi * sin_phi)**1.5))
-    t = tan_phi
+    t = tan_phi * tan_phi
+    c = E_PRIME2 * (cos_phi * cos_phi)
+    a = d_lambda * cos_phi
 
-    a1 = d_lambda * cos_phi
-    a2 = (d_lambda**3) * (cos_phi**3) * (psi - t*t) / 6.0
-    a3 = (d_lambda**5) * (cos_phi**5) * (4.0*(psi**3)*(1.0 - 6.0*t*t) + (psi**2)*(1.0 + 8.0*t*t) - 2.0*psi*t*t + t**4) / 120.0
-    easting = FALSE_EASTING + K0 * nu * (a1 + a2 + a3)
+    x_term = a + (1.0 - t + c) * (a**3)/6.0 + (5.0 - 18.0*t + t*t + 72.0*c - 58.0*E_PRIME2) * (a**5)/120.0
+    easting = FALSE_EASTING + K0 * nu * x_term
 
-    b1 = (d_lambda**2) * sin_phi * cos_phi / 2.0
-    b2 = (d_lambda**4) * sin_phi * (cos_phi**3) * (4.0*psi*psi + psi - t*t) / 24.0
-    b3 = (d_lambda**6) * sin_phi * (cos_phi**5) * (8.0*(psi**4)*(11.0 - 24.0*t*t) - 28.0*(psi**3)*(1.0 - 6.0*t*t) + (psi**2)*(1.0 - 32.0*t*t) - 2.0*psi*t*t + t**4) / 720.0
-    northing = FALSE_NORTHING + K0 * (m + nu * tan_phi * (b1 + b2 + b3))
+    y_term = (a**2)/2.0 + (5.0 - t + 9.0*c + 4.0*c*c) * (a**4)/24.0 + (61.0 - 58.0*t + t*t + 600.0*c - 330.0*E_PRIME2) * (a**6)/720.0
+    northing = FALSE_NORTHING + K0 * (m + nu * tan_phi * y_term)
 
     return round(easting, 2), round(northing, 2)
 
@@ -577,6 +574,11 @@ def main():
             "total_causeways": len(causeways_manifest),
             "causeways": causeways_manifest
         }, f, indent=2, ensure_ascii=False)
+
+    import shutil
+    os.makedirs('android/assets/data', exist_ok=True)
+    for fname in ['BAHRAIN_NATIONAL_AOI.geojson', 'BAHRAIN_GOVERNORATES.geojson', 'BAHRAIN_ISLANDS_MANIFEST.json', 'BAHRAIN_CAUSEWAYS_MANIFEST.json']:
+        shutil.copy(os.path.join('data/geodata', fname), os.path.join('android/assets/data', fname))
 
     print("Successfully built all Bahrain geodata manifests:")
     print(" - data/geodata/BAHRAIN_NATIONAL_AOI.geojson")

@@ -24,7 +24,7 @@
       ],
       "has_player_spawn": true,
       "utm39n_easting_m": 454983.84,
-      "utm39n_northing_m": 2881258.99
+      "utm39n_northing_m": 2881298.68
     },
     {
       "island_id": "isl_muharraq",
@@ -43,7 +43,7 @@
       ],
       "has_player_spawn": true,
       "utm39n_easting_m": 462052.8,
-      "utm39n_northing_m": 2903951.43
+      "utm39n_northing_m": 2903979.64
     },
     {
       "island_id": "isl_sitra",
@@ -62,7 +62,7 @@
       ],
       "has_player_spawn": true,
       "utm39n_easting_m": 461520.62,
-      "utm39n_northing_m": 2892877.28
+      "utm39n_northing_m": 2892906.28
     },
     {
       "island_id": "isl_nabih_saleh",
@@ -81,7 +81,7 @@
       ],
       "has_player_spawn": true,
       "utm39n_easting_m": 458433.96,
-      "utm39n_northing_m": 2896536.67
+      "utm39n_northing_m": 2896570.52
     },
     {
       "island_id": "isl_umm_an_nasan",
@@ -100,7 +100,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 440025.61,
-      "utm39n_northing_m": 2891588.26
+      "utm39n_northing_m": 2891658.71
     },
     {
       "island_id": "isl_jidda",
@@ -118,7 +118,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 440052.21,
-      "utm39n_northing_m": 2897347.31
+      "utm39n_northing_m": 2897417.71
     },
     {
       "island_id": "isl_hawar_main",
@@ -138,7 +138,7 @@
       ],
       "has_player_spawn": true,
       "utm39n_easting_m": 475912.6,
-      "utm39n_northing_m": 2838042.37
+      "utm39n_northing_m": 2838053.72
     },
     {
       "island_id": "isl_suwad_shamaliyah",
@@ -157,7 +157,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 479428.79,
-      "utm39n_northing_m": 2840254.31
+      "utm39n_northing_m": 2840262.59
     },
     {
       "island_id": "isl_suwad_janubiyah",
@@ -176,7 +176,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 480925.26,
-      "utm39n_northing_m": 2834162.59
+      "utm39n_northing_m": 2834169.71
     },
     {
       "island_id": "isl_rubud_gharbiyah",
@@ -194,7 +194,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 471912.09,
-      "utm39n_northing_m": 2844690.56
+      "utm39n_northing_m": 2844705.99
     },
     {
       "island_id": "isl_rubud_sharqiyah",
@@ -212,7 +212,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 473919.47,
-      "utm39n_northing_m": 2845242.28
+      "utm39n_northing_m": 2845255.59
     },
     {
       "island_id": "isl_muhazwarah",
@@ -230,7 +230,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 469890.72,
-      "utm39n_northing_m": 2838048.27
+      "utm39n_northing_m": 2838066.01
     },
     {
       "island_id": "isl_ajirah",
@@ -247,7 +247,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 481445.05,
-      "utm39n_northing_m": 2846897.27
+      "utm39n_northing_m": 2846904.01
     },
     {
       "island_id": "isl_amwaj",
@@ -266,7 +266,7 @@
       ],
       "has_player_spawn": true,
       "utm39n_easting_m": 466558.04,
-      "utm39n_northing_m": 2908375.29
+      "utm39n_northing_m": 2908397.2
     },
     {
       "island_id": "isl_diyar",
@@ -285,7 +285,7 @@
       ],
       "has_player_spawn": true,
       "utm39n_easting_m": 462571.36,
-      "utm39n_northing_m": 2910595.71
+      "utm39n_northing_m": 2910623.16
     },
     {
       "island_id": "isl_dilmunia",
@@ -303,7 +303,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 467550.75,
-      "utm39n_northing_m": 2906159.04
+      "utm39n_northing_m": 2906179.67
     },
     {
       "island_id": "isl_durrat",
@@ -322,7 +322,7 @@
       ],
       "has_player_spawn": true,
       "utm39n_easting_m": 458909.06,
-      "utm39n_northing_m": 2856888.64
+      "utm39n_northing_m": 2856921.69
     },
     {
       "island_id": "isl_bahrain_bay",
@@ -340,7 +340,7 @@
       ],
       "has_player_spawn": true,
       "utm39n_easting_m": 458155.67,
-      "utm39n_northing_m": 2903182.11
+      "utm39n_northing_m": 2903216.41
     },
     {
       "island_id": "isl_reef",
@@ -358,7 +358,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 456356.17,
-      "utm39n_northing_m": 2902631.29
+      "utm39n_northing_m": 2902668.6
     },
     {
       "island_id": "isl_causeway_border",
@@ -376,7 +376,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 432551.62,
-      "utm39n_northing_m": 2896036.39
+      "utm39n_northing_m": 2896125.5
     },
     {
       "island_id": "isl_khalifa_causeway_isle",
@@ -394,7 +394,7 @@
       ],
       "has_player_spawn": false,
       "utm39n_easting_m": 462739.4,
-      "utm39n_northing_m": 2899631.21
+      "utm39n_northing_m": 2899658.41
     }
   ]
 }

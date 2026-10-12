@@ -53,12 +53,12 @@ public class AeroplanePhysics {
                      float rudderInput, boolean brake, BahrainWeatherSystem weather, float runwayElevM) {
         // 1. Engine & Propeller Thrust
         if (throttle > 0.05f) {
-            engineRpm = Math.min(2650.0f, engineRpm + 950.0f * dt);
+            engineRpm = Math.min(2650.0f, engineRpm + 1800.0f * dt);
         } else {
             engineRpm = Math.max(750.0f, engineRpm - 600.0f * dt);
         }
 
-        float maxThrustN = 3800.0f;
+        float maxThrustN = 5400.0f;
         float propAdvanceRatio = Math.max(0.2f, 1.0f - (airspeedMs / 95.0f));
         float thrustN = maxThrustN * throttle * (engineRpm / 2650.0f) * propAdvanceRatio;
 
@@ -99,9 +99,9 @@ public class AeroplanePhysics {
         float accelForward = netThrustDrag / EMPTY_MASS_KG;
         airspeedMs = Math.max(0.0f, airspeedMs + accelForward * dt);
 
-        // 5. Flight Controls (authority scales with airspeed)
-        float controlAuthority = Math.min(1.0f, airspeedMs / 25.0f);
-        pitchRad += (pitchInput * 0.35f * controlAuthority - pitchRad * 0.4f) * dt;
+        // 5. Flight Controls (authority scales with airspeed and slipstream)
+        float controlAuthority = Math.min(1.0f, Math.max(0.35f, airspeedMs / 25.0f));
+        pitchRad += (-pitchInput * 0.45f * controlAuthority - pitchRad * 0.25f) * dt;
         rollRad += (rollInput * 0.65f * controlAuthority - rollRad * 0.5f) * dt;
         yawRad += (rudderInput * 0.25f * controlAuthority) * dt;
 

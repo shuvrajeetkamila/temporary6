@@ -18,8 +18,8 @@
         "crs_master": "EPSG:32639",
         "min_easting_m": 424908.67,
         "max_easting_m": 494989.78,
-        "min_northing_m": 2814777.57,
-        "max_northing_m": 2920090.6,
+        "min_northing_m": 2814778.06,
+        "max_northing_m": 2920200.24,
         "description": "Authoritative sovereign area of interest with continuous marine gameplay buffer."
       },
       "geometry": {

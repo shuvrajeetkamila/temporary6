@@ -1,0 +1,138 @@
+{
+  "country": "Bahrain",
+  "total_landmarks": 11,
+  "landmarks": [
+    {
+      "id": "lm_bab_bahrain",
+      "name_en": "Bab Al Bahrain",
+      "name_ar": "باب البحرين",
+      "lat": 26.2355,
+      "lon": 50.5758,
+      "category": "heritage",
+      "utm_m": [
+        457631.82,
+        2901833.73
+      ]
+    },
+    {
+      "id": "lm_bwtc",
+      "name_en": "World Trade Center",
+      "name_ar": "مركز التجارة العالمي",
+      "lat": 26.2395,
+      "lon": 50.5815,
+      "category": "skyline",
+      "utm_m": [
+        458202.56,
+        2902274.88
+      ]
+    },
+    {
+      "id": "lm_airport",
+      "name_en": "Bahrain International Airport",
+      "name_ar": "مطار البحرين الدولي",
+      "lat": 26.2708,
+      "lon": 50.6336,
+      "category": "transport",
+      "utm_m": [
+        463415.87,
+        2905725.57
+      ]
+    },
+    {
+      "id": "lm_bahrain_fort",
+      "name_en": "Bahrain Fort",
+      "name_ar": "قلعة البحرين",
+      "lat": 26.2336,
+      "lon": 50.5204,
+      "category": "unesco",
+      "utm_m": [
+        452097.73,
+        2901642.6
+      ]
+    },
+    {
+      "id": "lm_king_fahd_csw",
+      "name_en": "King Fahd Causeway",
+      "name_ar": "جسر الملك فهد",
+      "lat": 26.175,
+      "lon": 50.485,
+      "category": "causeway",
+      "utm_m": [
+        448536.18,
+        2895166.24
+      ]
+    },
+    {
+      "id": "lm_tree_of_life",
+      "name_en": "Tree of Life",
+      "name_ar": "شجرة الحياة",
+      "lat": 25.9944,
+      "lon": 50.5831,
+      "category": "nature",
+      "utm_m": [
+        458275.41,
+        2875130.21
+      ]
+    },
+    {
+      "id": "lm_jabal_ad_dukhan",
+      "name_en": "Jabal ad Dukhan (134m Peak)",
+      "name_ar": "جبل الدخان",
+      "lat": 26.0378,
+      "lon": 50.5511,
+      "category": "peak",
+      "utm_m": [
+        455089.24,
+        2879947.19
+      ]
+    },
+    {
+      "id": "lm_sakhir",
+      "name_en": "Sakhir Desert Hub",
+      "name_ar": "الصخير",
+      "lat": 26.0325,
+      "lon": 50.5106,
+      "category": "desert",
+      "utm_m": [
+        451035.11,
+        2879374.8
+      ]
+    },
+    {
+      "id": "lm_amwaj",
+      "name_en": "Amwaj Islands Lagoon",
+      "name_ar": "جزر أمواج",
+      "lat": 26.285,
+      "lon": 50.665,
+      "category": "island",
+      "utm_m": [
+        466555.17,
+        2907289.71
+      ]
+    },
+    {
+      "id": "lm_durrat",
+      "name_en": "Durrat Al Bahrain Crescent",
+      "name_ar": "درة البحرين",
+      "lat": 25.84,
+      "lon": 50.605,
+      "category": "resort",
+      "utm_m": [
+        460415.73,
+        2858024.52
+      ]
+    },
+    {
+      "id": "lm_hawar",
+      "name_en": "Hawar Archipelago Nature Reserve",
+      "name_ar": "جزر حوار",
+      "lat": 25.66,
+      "lon": 50.76,
+      "category": "reserve",
+      "utm_m": [
+        475912.6,
+        2838053.72
+      ]
+    }
+  ]
+}

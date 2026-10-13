@@ -41,6 +41,7 @@ public class RadarHUD implements Disposable {
                        float carLocalX, float carLocalZ,
                        float boatLocalX, float boatLocalZ,
                        float heliLocalX, float heliLocalZ,
+                       float planeLocalX, float planeLocalZ,
                        float currentSpeedKmh, float staminaPercent, float healthPercent,
                        boolean nearVehicle, String vehiclePromptText) {
 
@@ -110,6 +111,13 @@ public class RadarHUD implements Disposable {
             shapeRenderer.rect(heliRadarX - 3f, heliRadarY - 3f, 6f, 6f);
         }
 
+        float planeRadarX = radarCenterX + (planeLocalX - playerLocalX) * mapScale;
+        float planeRadarY = radarCenterY + (planeLocalZ - playerLocalZ) * mapScale;
+        if (Vector2.dst(radarCenterX, radarCenterY, planeRadarX, planeRadarY) < radarRadius - 4f) {
+            shapeRenderer.setColor(0.1f, 0.9f, 0.95f, 1f); // Cyan for Aeroplane
+            shapeRenderer.rect(planeRadarX - 3f, planeRadarY - 3f, 6f, 6f);
+        }
+
         // Rotating Player Arrow (Yellow) at Center of Radar
         shapeRenderer.setColor(1.0f, 0.95f, 0.15f, 1.0f);
         float radHdg = (float) Math.toRadians(playerHeadingDeg);
@@ -129,6 +137,26 @@ public class RadarHUD implements Disposable {
             // Joystick Thumb Knob
             shapeRenderer.setColor(1f, 1f, 1f, 0.70f);
             shapeRenderer.circle(touch.joystickKnob.x, touch.joystickKnob.y, touch.joystickRadius * 0.45f, 24);
+        }
+
+        // 3. 5 Entity Locomotion Mode Selector Buttons (Bottom Center)
+        String[] modeLabels = {"1:FOOT", "2:CAR", "3:BOAT", "4:HELI", "5:PLANE"};
+        GameHUD.ControlMode[] modes = {
+                GameHUD.ControlMode.ON_FOOT,
+                GameHUD.ControlMode.CAR,
+                GameHUD.ControlMode.BOAT,
+                GameHUD.ControlMode.HELICOPTER,
+                GameHUD.ControlMode.AEROPLANE
+        };
+
+        for (int i = 0; i < 5; i++) {
+            boolean isCurrent = (hud.getMode() == modes[i]);
+            if (isCurrent) {
+                shapeRenderer.setColor(0.95f, 0.75f, 0.15f, 0.92f); // Gold highlight
+            } else {
+                shapeRenderer.setColor(0.12f, 0.16f, 0.22f, 0.80f); // Dark translucent
+            }
+            shapeRenderer.rect(touch.btnVehicleSlots[i].x, touch.btnVehicleSlots[i].y, touch.btnVehicleW, touch.btnVehicleH);
         }
 
         // Action Buttons on Right
@@ -218,6 +246,17 @@ public class RadarHUD implements Disposable {
         if (hud.getMode() != GameHUD.ControlMode.ON_FOOT) {
             font.setColor(Color.WHITE);
             font.draw(spriteBatch, String.format("SPEED: %03.0f KM/H", currentSpeedKmh), barX, staminaY - 34f);
+        }
+
+        // Radar Map Hint
+        font.setColor(0.95f, 0.85f, 0.35f, 0.95f);
+        font.draw(spriteBatch, "TAP MAP (M)", radarCenterX - 38f, radarCenterY + radarRadius + 18f);
+
+        // 5 Entity Switcher Labels
+        for (int i = 0; i < 5; i++) {
+            boolean isCurrent = (hud.getMode() == modes[i]);
+            font.setColor(isCurrent ? Color.BLACK : Color.WHITE);
+            font.draw(spriteBatch, modeLabels[i], touch.btnVehicleSlots[i].x + 8f, touch.btnVehicleSlots[i].y + touch.btnVehicleH * 0.65f);
         }
 
         // Thermal Pacing Indicator

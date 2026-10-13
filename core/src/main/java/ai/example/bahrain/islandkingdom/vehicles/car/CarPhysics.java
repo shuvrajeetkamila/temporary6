@@ -135,4 +135,11 @@ public class CarPhysics {
     public int getCurrentGear() { return currentGear; }
     public float getHeadingRad() { return headingRad; }
     public float getYawRad() { return headingRad; }
+
+    public void teleport(double x, double y, double z) {
+        this.posX = x;
+        this.posY = y;
+        this.posZ = z;
+        this.currentSpeedMs = 0f;
+    }
 }

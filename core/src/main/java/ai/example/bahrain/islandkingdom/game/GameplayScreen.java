@@ -2,6 +2,7 @@ package ai.example.bahrain.islandkingdom.game;
 
 import ai.example.bahrain.islandkingdom.render.ProceduralWorldMesh;
 import ai.example.bahrain.islandkingdom.render.ThermalPerformanceManager;
+import ai.example.bahrain.islandkingdom.ui.FullscreenWorldMap;
 import ai.example.bahrain.islandkingdom.ui.GameHUD;
 import ai.example.bahrain.islandkingdom.ui.GameHUD.ControlMode;
 import ai.example.bahrain.islandkingdom.ui.RadarHUD;
@@ -21,11 +22,12 @@ import com.badlogic.gdx.math.Vector3;
  * Complete 3D Third-Person Open-World Gameplay Screen for Bahrain.
  * Implements a playable sandbox experience inspired by classic 3D city games:
  * - Real-time 3D PerspectiveCamera with third-person chase physics.
- * - Procedural 3D island terrain, roads, Manama skyline, and landmarks.
+ * - Procedural 3D island terrain, roads, Manama skyline, and landmarks with windows and architectural facades.
  * - Fully animated low-poly humanoid player character.
- * - Drivable 4x4 SUV, Dhow boat, and Helicopter with seamless Enter/Exit.
- * - Classic circular minimap radar with coastline, player arrow, and vehicle blips.
- * - Mobile virtual analog joystick, touch action buttons, and desktop keyboard fallback.
+ * - 5 drivable entity modes (Human, 4x4 SUV, coastal dhow boat, helicopter, aeroplane) with seamless Enter/Exit.
+ * - Circular minimap radar with coastline, player arrow, and vehicle blips.
+ * - Interactive fullscreen world map with zoom in/out, pan, and direct touch-to-teleportation across Bahrain.
+ * - Mobile virtual analog joystick, touch action buttons, entity switcher bar, and desktop keyboard fallback.
  */
 public class GameplayScreen implements Screen {
 
@@ -40,6 +42,7 @@ public class GameplayScreen implements Screen {
     // 2D HUD and Touch Input
     private TouchController touchController;
     private RadarHUD radarHud;
+    private FullscreenWorldMap fullscreenMap;
 
     // Third-Person Camera Tracking
     private float cameraYaw = 45.0f;
@@ -78,9 +81,10 @@ public class GameplayScreen implements Screen {
         // 3. Build Procedural 3D Meshes
         worldMesh = new ProceduralWorldMesh();
 
-        // 4. Initialize Touch Input Controller and Radar HUD
+        // 4. Initialize Touch Input Controller, Radar HUD, and Fullscreen World Map
         touchController = new TouchController(game.hud);
         radarHud = new RadarHUD();
+        fullscreenMap = new FullscreenWorldMap();
         Gdx.input.setInputProcessor(touchController);
 
         // Initial camera position
@@ -96,16 +100,29 @@ public class GameplayScreen implements Screen {
         // 1. Update Thermal Performance Manager
         game.thermalManager.update(dt, 0.95f);
 
-        // 2. Handle Instant Vehicle Swaps (Keys 1-4)
+        // 2. Handle Minimap / Fullscreen Map Toggle
+        if (touchController.requestOpenMap) {
+            fullscreenMap.isOpen = !fullscreenMap.isOpen;
+            touchController.requestOpenMap = false;
+        }
+
+        // Handle Touch Events on Fullscreen Map
+        if (fullscreenMap.isOpen) {
+            if (Gdx.input.justTouched()) {
+                fullscreenMap.handleTouch(game, Gdx.input.getX(), Gdx.input.getY());
+            }
+        }
+
+        // 3. Handle Instant Vehicle Swaps (Keys 1-5 or On-Screen Selector)
         if (touchController.requestVehicleSwap > 0) {
             handleVehicleSwap(touchController.requestVehicleSwap);
             touchController.requestVehicleSwap = 0;
         }
 
-        // 3. Step 60 Hz Physics Engines
+        // 4. Step 60 Hz Physics Engines
         game.physicsEngine.update(dt);
 
-        // 4. Calculate Entity Local Positions Relative to Floating Origin
+        // 5. Calculate Entity Local Positions Relative to Floating Origin
         float[] playerLocal = game.floatingOrigin.worldToLocal(
                 game.playerHuman.getPosX(), game.playerHuman.getPosY(), game.playerHuman.getPosZ());
         float[] carLocal = game.floatingOrigin.worldToLocal(
@@ -114,16 +131,23 @@ public class GameplayScreen implements Screen {
                 game.playerBoat.getPosX(), game.playerBoat.getPosY(), game.playerBoat.getPosZ());
         float[] heliLocal = game.floatingOrigin.worldToLocal(
                 game.playerHeli.getPosX(), game.playerHeli.getPosY(), game.playerHeli.getPosZ());
+        float[] planeLocal = game.floatingOrigin.worldToLocal(
+                game.playerPlane.getPosX(), game.playerPlane.getPosY(), game.playerPlane.getPosZ());
 
         float playerHeading = (float) Math.toDegrees(game.playerHuman.getFacingRad());
         float carHeading = (float) Math.toDegrees(game.playerCar.getYawRad());
         float boatHeading = (float) Math.toDegrees(game.playerBoat.getYawRad());
         float heliHeading = (float) Math.toDegrees(game.playerHeli.getYawRad());
+        float planeHeading = (float) Math.toDegrees(game.playerPlane.getYawRad());
+        float planePitch = (float) Math.toDegrees(game.playerPlane.getPitchRad());
+        float planeRoll = (float) Math.toDegrees(game.playerPlane.getRollRad());
+        float planeAirspeed = game.playerPlane.getAirspeedMs();
 
-        // 5. Vehicle Proximity & Enter/Exit Interaction
+        // 6. Vehicle Proximity & Enter/Exit Interaction
         float distToCar = Vector3.dst(playerLocal[0], 0f, playerLocal[2], carLocal[0], 0f, carLocal[2]);
         float distToBoat = Vector3.dst(playerLocal[0], 0f, playerLocal[2], boatLocal[0], 0f, boatLocal[2]);
         float distToHeli = Vector3.dst(playerLocal[0], 0f, playerLocal[2], heliLocal[0], 0f, heliLocal[2]);
+        float distToPlane = Vector3.dst(playerLocal[0], 0f, playerLocal[2], planeLocal[0], 0f, planeLocal[2]);
 
         boolean nearVehicle = false;
         String promptText = null;
@@ -150,18 +174,24 @@ public class GameplayScreen implements Screen {
                     game.hud.setMode(ControlMode.HELICOPTER);
                     interactCooldown = 0.5f;
                 }
+            } else if (distToPlane < 7.5f) {
+                nearVehicle = true;
+                promptText = "TAP [ENTER] OR PRESS 'F' TO FLY AEROPLANE";
+                if (game.hud.inputInteract && !lastInteractState && interactCooldown <= 0f) {
+                    game.hud.setMode(ControlMode.AEROPLANE);
+                    interactCooldown = 0.5f;
+                }
             }
         } else {
-            // Already inside vehicle: exit when interact pressed
             promptText = "TAP [EXIT] OR PRESS 'F' TO EXIT";
             if (game.hud.inputInteract && !lastInteractState && interactCooldown <= 0f) {
-                exitCurrentVehicle(playerLocal, carLocal, boatLocal, heliLocal);
+                exitCurrentVehicle();
                 interactCooldown = 0.5f;
             }
         }
         lastInteractState = game.hud.inputInteract;
 
-        // 6. Update 3D Entity Transforms and Locomotion Animations
+        // 7. Update 3D Entity Transforms and Locomotion Animations
         float walkSpeed = game.playerHuman.getSpeedMs();
         boolean onFoot = game.hud.getMode() == ControlMode.ON_FOOT;
         boolean heliRunning = game.hud.getMode() == ControlMode.HELICOPTER || game.playerHeli.getRotorRpm() > 100f;
@@ -170,44 +200,68 @@ public class GameplayScreen implements Screen {
                 playerLocal[0], playerLocal[1], playerLocal[2], playerHeading, walkSpeed, onFoot,
                 carLocal[0], carLocal[1], carLocal[2], carHeading,
                 boatLocal[0], boatLocal[1], boatLocal[2], boatHeading,
-                heliLocal[0], heliLocal[1], heliLocal[2], heliHeading, heliRunning);
+                heliLocal[0], heliLocal[1], heliLocal[2], heliHeading, heliRunning,
+                planeLocal[0], planeLocal[1], planeLocal[2], planeHeading, planePitch, planeRoll, planeAirspeed);
 
-        // 7. Update Third-Person Chase Camera
-        updateThirdPersonCamera(dt, onFoot, playerLocal, carLocal, boatLocal, heliLocal,
-                playerHeading, carHeading, boatHeading, heliHeading);
+        // 8. Update Third-Person Chase Camera
+        updateThirdPersonCamera(dt, onFoot, playerLocal, carLocal, boatLocal, heliLocal, planeLocal,
+                playerHeading, carHeading, boatHeading, heliHeading, planeHeading);
 
-        // 8. Clear Screen to Warm Bahrain Gulf Daytime Sky (Never solid blue!)
+        // 9. Clear Screen to Warm Bahrain Gulf Daytime Sky (Never solid blue!)
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        Gdx.gl.glClearColor(0.50f, 0.70f, 0.88f, 1.0f); // Bright Mediterranean/Gulf sky blue
+        Gdx.gl.glClearColor(0.50f, 0.70f, 0.88f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        // 9. Render 3D World Geometry & Entities with GLES3 PBR Pipeline
+        // 10. Render 3D World Geometry & Entities
         modelBatch.begin(camera);
 
         // Terrain Slabs & Roads
         modelBatch.render(worldMesh.terrainInstances, environment);
 
-        // City High-Rises & Landmarks
+        // City High-Rises & Landmarks with Windows and Architectural Details
         modelBatch.render(worldMesh.buildingInstances, environment);
 
-        // Palms & Streetlights
+        // Date Palms & Streetlights
         modelBatch.render(worldMesh.decorationInstances, environment);
 
         // 4x4 Off-Road Vehicle
         modelBatch.render(worldMesh.carBodyInstance, environment);
+        modelBatch.render(worldMesh.carCabinInstance, environment);
+        modelBatch.render(worldMesh.carWindshieldInstance, environment);
+        modelBatch.render(worldMesh.carHeadlightLInstance, environment);
+        modelBatch.render(worldMesh.carHeadlightRInstance, environment);
+        modelBatch.render(worldMesh.carTaillightLInstance, environment);
+        modelBatch.render(worldMesh.carTaillightRInstance, environment);
         for (int i = 0; i < 4; i++) {
             modelBatch.render(worldMesh.carWheelInstances[i], environment);
         }
 
         // Dhow Coastal Boat
         modelBatch.render(worldMesh.boatHullInstance, environment);
+        modelBatch.render(worldMesh.boatDeckInstance, environment);
         modelBatch.render(worldMesh.boatCabinInstance, environment);
         modelBatch.render(worldMesh.boatMastInstance, environment);
+        modelBatch.render(worldMesh.boatBoomInstance, environment);
 
         // Utility Helicopter
         modelBatch.render(worldMesh.heliFuselageInstance, environment);
+        modelBatch.render(worldMesh.heliCockpitInstance, environment);
         modelBatch.render(worldMesh.heliTailInstance, environment);
+        modelBatch.render(worldMesh.heliSkidLInstance, environment);
+        modelBatch.render(worldMesh.heliSkidRInstance, environment);
         modelBatch.render(worldMesh.heliRotorInstance, environment);
+        modelBatch.render(worldMesh.heliTailRotorInstance, environment);
+
+        // Light Aeroplane
+        modelBatch.render(worldMesh.planeFuselageInstance, environment);
+        modelBatch.render(worldMesh.planeWingInstance, environment);
+        modelBatch.render(worldMesh.planeCanopyInstance, environment);
+        modelBatch.render(worldMesh.planeTailFinInstance, environment);
+        modelBatch.render(worldMesh.planeTailStabInstance, environment);
+        modelBatch.render(worldMesh.planePropellerInstance, environment);
+        for (int i = 0; i < 3; i++) {
+            modelBatch.render(worldMesh.planeGearInstances[i], environment);
+        }
 
         // Player Human (when on foot)
         if (onFoot) {
@@ -221,7 +275,7 @@ public class GameplayScreen implements Screen {
 
         modelBatch.end();
 
-        // 10. Telemetry & Speed Calculations
+        // 11. Telemetry & Speed Calculations
         float currentSpeedKmh = 0f;
         if (game.hud.getMode() == ControlMode.CAR) {
             currentSpeedKmh = game.playerCar.getSpeedKmh();
@@ -229,27 +283,47 @@ public class GameplayScreen implements Screen {
             currentSpeedKmh = game.playerBoat.getSpeedKnots() * 1.852f;
         } else if (game.hud.getMode() == ControlMode.HELICOPTER) {
             currentSpeedKmh = game.playerHeli.getAirspeedKnots() * 1.852f;
+        } else if (game.hud.getMode() == ControlMode.AEROPLANE) {
+            currentSpeedKmh = game.playerPlane.getAirspeedKnots() * 1.852f;
         }
 
         float staminaPercent = game.playerHuman.getStaminaPercent();
         float healthPercent = 1.0f - (game.playerHuman.getHeatAccumulation() / 100f);
 
-        // 11. Render 2D GTA-Style Radar, Virtual Controls, and Telemetry
+        // 12. Render 2D Minimap Radar, Virtual Controls, and Telemetry
         radarHud.render(game.hud, touchController, game.thermalManager,
                 playerHeading, playerLocal[0], playerLocal[2],
                 carLocal[0], carLocal[2],
                 boatLocal[0], boatLocal[2],
                 heliLocal[0], heliLocal[2],
+                planeLocal[0], planeLocal[2],
                 currentSpeedKmh, staminaPercent, healthPercent,
                 nearVehicle, promptText);
+
+        // 13. Render Interactive Fullscreen World Map Modal
+        if (fullscreenMap.isOpen) {
+            double curX = onFoot ? game.playerHuman.getPosX() :
+                    (game.hud.getMode() == ControlMode.CAR ? game.playerCar.getPosX() :
+                    (game.hud.getMode() == ControlMode.BOAT ? game.playerBoat.getPosX() :
+                    (game.hud.getMode() == ControlMode.HELICOPTER ? game.playerHeli.getPosX() : game.playerPlane.getPosX())));
+            double curZ = onFoot ? game.playerHuman.getPosZ() :
+                    (game.hud.getMode() == ControlMode.CAR ? game.playerCar.getPosZ() :
+                    (game.hud.getMode() == ControlMode.BOAT ? game.playerBoat.getPosZ() :
+                    (game.hud.getMode() == ControlMode.HELICOPTER ? game.playerHeli.getPosZ() : game.playerPlane.getPosZ())));
+
+            fullscreenMap.render(game, curX, curZ, playerHeading);
+        }
     }
 
     private void updateThirdPersonCamera(float dt, boolean onFoot,
-                                         float[] playerLocal, float[] carLocal, float[] boatLocal, float[] heliLocal,
-                                         float playerHeading, float carHeading, float boatHeading, float heliHeading) {
-        // Orbit drag from touch
-        cameraYaw += touchController.cameraDeltaYaw;
-        cameraPitch = MathUtils.clamp(cameraPitch + touchController.cameraDeltaPitch, 5f, 75f);
+                                         float[] playerLocal, float[] carLocal, float[] boatLocal,
+                                         float[] heliLocal, float[] planeLocal,
+                                         float playerHeading, float carHeading, float boatHeading,
+                                         float heliHeading, float planeHeading) {
+        if (!fullscreenMap.isOpen) {
+            cameraYaw += touchController.cameraDeltaYaw;
+            cameraPitch = MathUtils.clamp(cameraPitch + touchController.cameraDeltaPitch, 5f, 75f);
+        }
         touchController.cameraDeltaYaw = 0f;
         touchController.cameraDeltaPitch = 0f;
 
@@ -264,23 +338,27 @@ public class GameplayScreen implements Screen {
             cameraTarget.set(carLocal[0], carLocal[1] + 1.2f, carLocal[2]);
             targetLookHeight = 1.2f;
             targetDist = 7.5f;
-            // Smoothly align camera behind car
             cameraYaw = MathUtils.lerpAngleDeg(cameraYaw, carHeading + 180f, dt * 3.5f);
         } else if (game.hud.getMode() == ControlMode.BOAT) {
             cameraTarget.set(boatLocal[0], boatLocal[1] + 1.5f, boatLocal[2]);
             targetLookHeight = 1.5f;
             targetDist = 11.5f;
             cameraYaw = MathUtils.lerpAngleDeg(cameraYaw, boatHeading + 180f, dt * 2.5f);
-        } else {
+        } else if (game.hud.getMode() == ControlMode.HELICOPTER) {
             cameraTarget.set(heliLocal[0], heliLocal[1] + 1.5f, heliLocal[2]);
             targetLookHeight = 1.5f;
             targetDist = 13.0f;
             cameraYaw = MathUtils.lerpAngleDeg(cameraYaw, heliHeading + 180f, dt * 2.5f);
+        } else {
+            // Aeroplane chase camera
+            cameraTarget.set(planeLocal[0], planeLocal[1] + 1.2f, planeLocal[2]);
+            targetLookHeight = 1.2f;
+            targetDist = 14.5f;
+            cameraYaw = MathUtils.lerpAngleDeg(cameraYaw, planeHeading + 180f, dt * 2.5f);
         }
 
         cameraDist = MathUtils.lerp(cameraDist, targetDist, dt * 5f);
 
-        // Spherical orbital position calculation
         float radYaw = (float) Math.toRadians(cameraYaw);
         float radPitch = (float) Math.toRadians(cameraPitch);
 
@@ -288,7 +366,6 @@ public class GameplayScreen implements Screen {
         float camY = cameraTarget.y + (float) (cameraDist * Math.sin(radPitch));
         float camZ = cameraTarget.z + (float) (cameraDist * Math.cos(radPitch) * Math.cos(radYaw));
 
-        // Smooth camera lerp
         Vector3 targetCam = new Vector3(camX, camY, camZ);
         currentCameraPos.lerp(targetCam, dt * 10f);
 
@@ -297,11 +374,10 @@ public class GameplayScreen implements Screen {
         camera.update();
     }
 
-    private void exitCurrentVehicle(float[] playerLocal, float[] carLocal, float[] boatLocal, float[] heliLocal) {
+    private void exitCurrentVehicle() {
         ControlMode currentMode = game.hud.getMode();
         game.hud.setMode(ControlMode.ON_FOOT);
 
-        // Place player safely next to the driver door
         if (currentMode == ControlMode.CAR) {
             double exitX = game.playerCar.getPosX() - 2.5;
             double exitZ = game.playerCar.getPosZ();
@@ -314,6 +390,10 @@ public class GameplayScreen implements Screen {
             double exitX = game.playerHeli.getPosX() - 3.5;
             double exitZ = game.playerHeli.getPosZ();
             game.playerHuman.teleport(exitX, game.playerHeli.getPosY(), exitZ);
+        } else if (currentMode == ControlMode.AEROPLANE) {
+            double exitX = game.playerPlane.getPosX() - 4.5;
+            double exitZ = game.playerPlane.getPosZ();
+            game.playerHuman.teleport(exitX, game.playerPlane.getPosY(), exitZ);
         }
     }
 
@@ -331,6 +411,9 @@ public class GameplayScreen implements Screen {
             case 4:
                 game.hud.setMode(ControlMode.HELICOPTER);
                 break;
+            case 5:
+                game.hud.setMode(ControlMode.AEROPLANE);
+                break;
         }
     }
 
@@ -346,14 +429,20 @@ public class GameplayScreen implements Screen {
         }
     }
 
-    @Override public void pause() {}
-    @Override public void resume() {}
-    @Override public void hide() {}
+    @Override
+    public void pause() {}
+
+    @Override
+    public void resume() {}
+
+    @Override
+    public void hide() {}
 
     @Override
     public void dispose() {
         if (modelBatch != null) modelBatch.dispose();
         if (worldMesh != null) worldMesh.dispose();
         if (radarHud != null) radarHud.dispose();
+        if (fullscreenMap != null) fullscreenMap.dispose();
     }
 }

@@ -130,4 +130,13 @@ public class HelicopterPhysics {
     public float getAirspeedKnots() {
         return (float) (Math.sqrt(velocityX * velocityX + velocityZ * velocityZ) * 1.94384);
     }
+
+    public void teleport(double x, double y, double z) {
+        this.posX = x;
+        this.posY = y;
+        this.posZ = z;
+        this.velocityX = 0f;
+        this.velocityY = 0f;
+        this.velocityZ = 0f;
+    }
 }

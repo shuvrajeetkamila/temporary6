@@ -104,6 +104,7 @@ public class BahrainGame extends Game {
             playerCar.step(dt, 0.0f, 1.0f, 0.0f, terrainGenerator.getBiomeAtUtm(playerCar.getPosX(), playerCar.getPosZ()));
             playerBoat.step(dt, 0.0f, 0.0f, waterSystem, timeSec);
             playerHeli.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerHeli.getPosX(), playerHeli.getPosZ()));
+            playerPlane.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, true, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerPlane.getPosX(), playerPlane.getPosZ()));
 
             floatingOrigin.checkAndRebase(playerHuman.getPosX(), playerHuman.getPosY(), playerHuman.getPosZ());
             chunkStreamer.update(playerHuman.getPosX(), playerHuman.getPosZ(), 0.0, 0.0);
@@ -119,6 +120,7 @@ public class BahrainGame extends Game {
 
             playerBoat.step(dt, 0.0f, 0.0f, waterSystem, timeSec);
             playerHeli.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerHeli.getPosX(), playerHeli.getPosZ()));
+            playerPlane.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, true, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerPlane.getPosX(), playerPlane.getPosZ()));
 
             floatingOrigin.checkAndRebase(playerCar.getPosX(), playerCar.getPosY(), playerCar.getPosZ());
             chunkStreamer.update(playerCar.getPosX(), playerCar.getPosZ(), 0.0, 0.0);
@@ -133,6 +135,7 @@ public class BahrainGame extends Game {
 
             playerCar.step(dt, 0.0f, 1.0f, 0.0f, terrainGenerator.getBiomeAtUtm(playerCar.getPosX(), playerCar.getPosZ()));
             playerHeli.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerHeli.getPosX(), playerHeli.getPosZ()));
+            playerPlane.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, true, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerPlane.getPosX(), playerPlane.getPosZ()));
 
             floatingOrigin.checkAndRebase(playerBoat.getPosX(), playerBoat.getPosY(), playerBoat.getPosZ());
             chunkStreamer.update(playerBoat.getPosX(), playerBoat.getPosZ(), 0.0, 0.0);
@@ -147,10 +150,30 @@ public class BahrainGame extends Game {
 
             playerCar.step(dt, 0.0f, 1.0f, 0.0f, terrainGenerator.getBiomeAtUtm(playerCar.getPosX(), playerCar.getPosZ()));
             playerBoat.step(dt, 0.0f, 0.0f, waterSystem, timeSec);
+            playerPlane.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, true, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerPlane.getPosX(), playerPlane.getPosZ()));
 
             floatingOrigin.checkAndRebase(playerHeli.getPosX(), playerHeli.getPosY(), playerHeli.getPosZ());
             chunkStreamer.update(playerHeli.getPosX(), playerHeli.getPosZ(), 0.0, 0.0);
             trafficSystem.update(dt, playerHeli.getPosX(), playerHeli.getPosZ());
+
+        } else if (mode == GameHUD.ControlMode.AEROPLANE) {
+            float throttle = Math.max(0.0f, hud.inputMoveY);
+            if (hud.inputAction1) throttle = 1.0f;
+            boolean brake = hud.inputAction2;
+            float pitch = hud.inputCameraY * 0.45f;
+            float roll = hud.inputMoveX * 0.55f;
+
+            playerPlane.step(dt, throttle, pitch, roll, 0.0f, brake, weatherSystem,
+                    (float) terrainGenerator.getElevationAtUtm(playerPlane.getPosX(), playerPlane.getPosZ()));
+            playerHuman.teleport(playerPlane.getPosX(), playerPlane.getPosY(), playerPlane.getPosZ());
+
+            playerCar.step(dt, 0.0f, 1.0f, 0.0f, terrainGenerator.getBiomeAtUtm(playerCar.getPosX(), playerCar.getPosZ()));
+            playerBoat.step(dt, 0.0f, 0.0f, waterSystem, timeSec);
+            playerHeli.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerHeli.getPosX(), playerHeli.getPosZ()));
+
+            floatingOrigin.checkAndRebase(playerPlane.getPosX(), playerPlane.getPosY(), playerPlane.getPosZ());
+            chunkStreamer.update(playerPlane.getPosX(), playerPlane.getPosZ(), 0.0, 0.0);
+            trafficSystem.update(dt, playerPlane.getPosX(), playerPlane.getPosZ());
         }
     }
 

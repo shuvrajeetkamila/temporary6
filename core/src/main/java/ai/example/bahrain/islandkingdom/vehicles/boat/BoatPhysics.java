@@ -107,4 +107,12 @@ public class BoatPhysics {
     public float getEngineRpm() { return engineRpm; }
     public float getHeadingRad() { return headingRad; }
     public float getYawRad() { return headingRad; }
+
+    public void teleport(double x, double y, double z) {
+        this.posX = x;
+        this.posY = y;
+        this.posZ = z;
+        this.speedMs = 0f;
+        this.velocityY = 0f;
+    }
 }

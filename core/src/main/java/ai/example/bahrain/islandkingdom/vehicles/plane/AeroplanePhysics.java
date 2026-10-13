@@ -135,4 +135,19 @@ public class AeroplanePhysics {
     public double getPosZ() { return posZ; }
     public boolean isOnGround() { return onGround; }
     public float getYawRad() { return yawRad; }
+    public float getPitchRad() { return pitchRad; }
+    public float getRollRad() { return rollRad; }
+    public float getAirspeedMs() { return airspeedMs; }
+    public float getEngineRpm() { return engineRpm; }
+
+    public void teleport(double x, double y, double z) {
+        this.posX = x;
+        this.posY = y;
+        this.posZ = z;
+        this.velocityX = 0f;
+        this.velocityY = 0f;
+        this.velocityZ = 0f;
+        this.airspeedMs = 0f;
+        this.onGround = true;
+    }
 }

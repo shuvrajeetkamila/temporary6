@@ -1,0 +1,168 @@
+{
+  "country": "Bahrain",
+  "total_buildings": 10,
+  "buildings": [
+    {
+      "id": "bldg_bwtc",
+      "name_en": "Bahrain World Trade Center",
+      "name_ar": "مركز البحرين التجاري العالمي",
+      "type": "twin_sail_tower",
+      "height_m": 240.0,
+      "floors": 50,
+      "center_lat": 26.2395,
+      "center_lon": 50.5815,
+      "facade_color": "#3B5C7D",
+      "window_style": "reflective_glass",
+      "special_feature": "triple_wind_turbines",
+      "center_utm_m": [
+        458202.56,
+        2902274.88
+      ]
+    },
+    {
+      "id": "bldg_bfh",
+      "name_en": "Bahrain Financial Harbour Dual Towers",
+      "name_ar": "مرفأ البحرين المالي",
+      "type": "dual_commercial_tower",
+      "height_m": 260.0,
+      "floors": 53,
+      "center_lat": 26.241,
+      "center_lon": 50.574,
+      "facade_color": "#2D4B68",
+      "window_style": "sapphire_curtain_wall",
+      "center_utm_m": [
+        457454.04,
+        2902443.44
+      ]
+    },
+    {
+      "id": "bldg_bab_al_bahrain",
+      "name_en": "Bab Al Bahrain Historic Gate",
+      "name_ar": "باب البحرين",
+      "type": "historic_gateway",
+      "height_m": 22.0,
+      "floors": 3,
+      "center_lat": 26.2355,
+      "center_lon": 50.5758,
+      "facade_color": "#D4B98E",
+      "window_style": "arched_lattice_mashrabiya",
+      "special_feature": "central_clock_tower",
+      "center_utm_m": [
+        457631.82,
+        2901833.73
+      ]
+    },
+    {
+      "id": "bldg_bahrain_fort",
+      "name_en": "Qal'at al-Bahrain (Bahrain Fort)",
+      "name_ar": "قلعة البحرين",
+      "type": "unesco_fortress",
+      "height_m": 16.0,
+      "floors": 2,
+      "center_lat": 26.2336,
+      "center_lon": 50.5204,
+      "facade_color": "#C4A87C",
+      "window_style": "fortress_embrasures",
+      "center_utm_m": [
+        452097.73,
+        2901642.6
+      ]
+    },
+    {
+      "id": "bldg_arad_fort",
+      "name_en": "Arad Fort (Muharraq)",
+      "name_ar": "قلعة عراد",
+      "type": "coastal_fortress",
+      "height_m": 12.0,
+      "floors": 2,
+      "center_lat": 26.252,
+      "center_lon": 50.627,
+      "facade_color": "#B89C72",
+      "window_style": "bastion_ports",
+      "center_utm_m": [
+        462750.87,
+        2903645.36
+      ]
+    },
+    {
+      "id": "bldg_national_museum",
+      "name_en": "Bahrain National Museum",
+      "name_ar": "متحف البحرين الوطني",
+      "type": "cultural_complex",
+      "height_m": 25.0,
+      "floors": 3,
+      "center_lat": 26.2405,
+      "center_lon": 50.598,
+      "facade_color": "#E5E0D5",
+      "window_style": "travertine_stone_facade",
+      "center_utm_m": [
+        459850.85,
+        2902380.41
+      ]
+    },
+    {
+      "id": "bldg_seef_towers",
+      "name_en": "Seef District Commercial Towers",
+      "name_ar": "أبراج ضاحية السيف",
+      "type": "modern_highrise",
+      "height_m": 140.0,
+      "floors": 35,
+      "center_lat": 26.242,
+      "center_lon": 50.535,
+      "facade_color": "#4A6E8E",
+      "window_style": "glass_curtain",
+      "center_utm_m": [
+        453559.33,
+        2902567.59
+      ]
+    },
+    {
+      "id": "bldg_diplomatic_area",
+      "name_en": "Diplomatic Area Ministries & Banks",
+      "name_ar": "المنطقة الدبلوماسية",
+      "type": "office_highrise",
+      "height_m": 110.0,
+      "floors": 28,
+      "center_lat": 26.238,
+      "center_lon": 50.589,
+      "facade_color": "#7B8A99",
+      "window_style": "gridded_concrete_glass",
+      "center_utm_m": [
+        458951.1,
+        2902106.36
+      ]
+    },
+    {
+      "id": "bldg_juffair_hotels",
+      "name_en": "Juffair Towers & Residence Hub",
+      "name_ar": "أبراج الجفير",
+      "type": "residential_tower",
+      "height_m": 95.0,
+      "floors": 26,
+      "center_lat": 26.215,
+      "center_lon": 50.605,
+      "facade_color": "#D8C7B0",
+      "window_style": "balcony_bay_windows",
+      "center_utm_m": [
+        460541.36,
+        2899554.17
+      ]
+    },
+    {
+      "id": "bldg_riffa_fort",
+      "name_en": "Riffa Fort (Shaikh Salman bin Ahmed)",
+      "name_ar": "قلعة الرفاع",
+      "type": "plateau_fortress",
+      "height_m": 14.0,
+      "floors": 2,
+      "center_lat": 26.117,
+      "center_lon": 50.562,
+      "facade_color": "#CDB48C",
+      "window_style": "limestone_courtyard",
+      "center_utm_m": [
+        456209.23,
+        2888714.64
+      ]
+    }
+  ]
+}

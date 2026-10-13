@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0c5a72" />
+    <title>Bahrain 3D</title>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <div id="loading-text">Loading Bahrain…</div>
+    </div>
+
+    <header id="hud" class="panel">
+      <div class="title">Bahrain 3D</div>
+      <div id="data-source" class="muted"></div>
+      <div id="status-title" class="big">On foot</div>
+      <div id="status-speed"></div>
+      <div id="status-alt" class="muted"></div>
+      <div class="row">
+        <button id="btn-map" class="chip" title="Map (M)">Map</button>
+        <button id="btn-night" class="chip" title="Day / night (N)">Night</button>
+        <button id="btn-help" class="chip" title="Controls (H)">Help</button>
+      </div>
+    </header>
+
+    <div id="prompt" class="hidden">
+      <button id="btn-enter" class="cta">Enter vehicle</button>
+    </div>
+    <button id="btn-exit" class="cta hidden">Get out</button>
+
+    <div id="toast" class="hidden" role="status"></div>
+
+    <div id="minimap" role="button" aria-label="Open map">
+      <canvas id="minimap-canvas"></canvas>
+      <div id="map-hint" class="hidden">Tap land to teleport · drag to pan · pinch to zoom</div>
+      <button class="close" data-close aria-label="Close map">✕</button>
+    </div>
+
+    <div id="touch" class="hidden">
+      <div id="joystick"><div id="stick"></div></div>
+      <div id="touch-buttons">
+        <button data-hold="up">▲</button>
+        <button data-hold="down">▼</button>
+        <button data-hold="brake">Jump / Brake</button>
+        <button data-hold="run">Run</button>
+        <button data-action="enter">E</button>
+      </div>
+    </div>
+
+    <div id="help" class="hidden panel">
+      <button class="close" id="help-close" aria-label="Close help">✕</button>
+      <h2>Controls</h2>
+      <table>
+        <tr><td>Move / drive</td><td>W A S D or arrows, or left stick</td></tr>
+        <tr><td>Sprint · throttle up</td><td>Shift (or hold ▲)</td></tr>
+        <tr><td>Throttle down</td><td>Ctrl (or hold ▼)</td></tr>
+        <tr><td>Jump · handbrake</td><td>Space</td></tr>
+        <tr><td>Enter / exit vehicle</td><td>E when within 2 m</td></tr>
+        <tr><td>Look around</td><td>Drag the screen · mouse wheel to zoom</td></tr>
+        <tr><td>Map · teleport</td><td>M, then tap land</td></tr>
+        <tr><td>Day / night</td><td>N</td></tr>
+      </table>
+      <p class="muted">Plane &amp; helicopter: W = nose down / forward tilt, A/D = bank or yaw.</p>
+    </div>
+
+    <footer id="attribution" class="muted"></footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

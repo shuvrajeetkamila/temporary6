@@ -1,0 +1,26 @@
+{
+  "name": "bahrain-temp6",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Bahrain 3D sandbox: OSM-style map generation, multi-vehicle physics, minimap teleport, Capacitor Android wrapper.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173 --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173 --strictPort",
+    "fetch:osm": "node scripts/fetch-osm.mjs",
+    "cap:sync": "npm run build && npx cap sync android",
+    "cap:open": "npx cap open android",
+    "test": "node --test tests/physics.test.mjs tests/data.test.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "cannon-es": "^0.20.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
+    "vite": "^8.3.4"
+  }
+}

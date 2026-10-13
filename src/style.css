@@ -1,0 +1,117 @@
+:root {
+  --ink: #f4f7fa;
+  --panel: rgba(12, 22, 32, 0.72);
+  --accent: #f2b33d;
+  --sea: #0c5a72;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; height: 100%; overflow: hidden; background: #0b1520;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink);
+  user-select: none; -webkit-user-select: none; touch-action: none;
+}
+#scene { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; }
+.hidden { display: none !important; }
+.muted { color: #b9c6d2; font-size: 12px; }
+.big { font-size: 20px; font-weight: 700; margin-top: 4px; }
+.title { font-weight: 800; letter-spacing: .04em; font-size: 15px; text-transform: uppercase; color: var(--accent); }
+
+.panel {
+  background: var(--panel); border-radius: 14px; padding: 12px 14px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 6px 24px rgba(0,0,0,.35);
+}
+
+button {
+  font: inherit; color: var(--ink); background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.22); border-radius: 10px; padding: 8px 12px; cursor: pointer;
+}
+button:active { transform: scale(.97); }
+.chip { padding: 5px 10px; font-size: 13px; }
+.cta {
+  background: var(--accent); color: #1b1200; font-weight: 800; border: 0;
+  padding: 14px 22px; border-radius: 999px; font-size: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+
+/* HUD */
+#hud { position: fixed; top: 12px; left: 12px; width: min(300px, calc(100vw - 24px)); z-index: 10; }
+#hud .row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+#status-speed { font-variant-numeric: tabular-nums; font-size: 14px; margin-top: 2px; }
+
+#prompt { position: fixed; left: 50%; bottom: 28%; transform: translateX(-50%); z-index: 12; }
+#btn-exit { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 12; }
+
+#toast {
+  position: fixed; left: 50%; top: 18px; transform: translateX(-50%); z-index: 30;
+  background: rgba(0,0,0,.78); color: #fff; padding: 10px 16px; border-radius: 999px;
+  font-size: 14px; max-width: calc(100vw - 40px); text-align: center; pointer-events: none;
+  transition: opacity .3s;
+}
+
+/* Minimap <-> full map: one element that animates between the two states */
+#minimap {
+  position: fixed; top: 12px; right: 12px; width: 190px; height: 190px; z-index: 20;
+  border-radius: 50%; overflow: hidden; cursor: pointer;
+  border: 3px solid rgba(255,255,255,.85); box-shadow: 0 8px 24px rgba(0,0,0,.45); background: var(--sea);
+  transition: top .4s ease, right .4s ease, width .4s ease, height .4s ease,
+              border-radius .4s ease, border-width .4s ease, box-shadow .4s ease;
+}
+#minimap canvas { display: block; width: 100%; height: 100%; }
+#minimap .close {
+  position: absolute; top: 12px; right: 12px; display: none; z-index: 2;
+  width: 40px; height: 40px; border-radius: 50%; padding: 0; font-size: 18px;
+  background: rgba(0,0,0,.6);
+}
+#minimap #map-hint {
+  position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); white-space: nowrap;
+  background: rgba(0,0,0,.7); padding: 8px 14px; border-radius: 999px; font-size: 13px; pointer-events: none;
+}
+#minimap.expanded {
+  top: 0; right: 0; width: 100vw; height: 100vh; border-radius: 0; border-width: 0; box-shadow: none; cursor: default;
+  height: 100dvh;
+}
+#minimap.expanded .close { display: block; }
+#minimap.expanded #map-hint { display: block; }
+
+/* touch controls */
+#touch { position: fixed; inset: 0; z-index: 15; pointer-events: none; }
+#joystick {
+  position: absolute; left: 24px; bottom: 24px; width: 140px; height: 140px; border-radius: 50%;
+  background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.3); pointer-events: auto;
+}
+#stick {
+  position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px;
+  border-radius: 50%; background: rgba(255,255,255,.45);
+}
+#touch-buttons { position: absolute; right: 16px; bottom: 24px; display: grid; grid-template-columns: repeat(3, auto); gap: 8px; pointer-events: auto; }
+#touch-buttons button { min-width: 64px; min-height: 52px; background: rgba(0,0,0,.35); font-size: 14px; }
+
+/* help */
+#help {
+  position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 40;
+  width: min(440px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto;
+}
+#help h2 { margin: 0 0 8px; font-size: 18px; }
+#help table { border-collapse: collapse; width: 100%; font-size: 14px; }
+#help td { padding: 5px 4px; border-top: 1px solid rgba(255,255,255,.1); vertical-align: top; }
+#help td:first-child { color: #d9e3ec; width: 44%; }
+#help .close { position: absolute; top: 8px; right: 8px; padding: 4px 9px; }
+
+/* loading */
+#loading {
+  position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 14px; background: #0b1520; transition: opacity .5s;
+}
+#loading.done { opacity: 0; pointer-events: none; }
+.spinner {
+  width: 42px; height: 42px; border-radius: 50%; border: 4px solid rgba(255,255,255,.2);
+  border-top-color: var(--accent); animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#attribution { position: fixed; right: 8px; bottom: 4px; z-index: 5; font-size: 11px; pointer-events: none; }
+
+@media (max-width: 600px) {
+  #hud { width: calc(100vw - 210px); }
+  #minimap { width: 150px; height: 150px; }
+}

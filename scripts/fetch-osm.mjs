@@ -74,6 +74,7 @@ async function downloadGpkg(url, dir) {
   console.log(`Downloading ${url}`);
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+  await mkdir(dir, { recursive: true });
   const zip = path.join(dir, path.basename(url));
   await writeFile(zip, Buffer.from(await res.arrayBuffer()));
   await execFileAsync('unzip', ['-o', '-q', zip, '-d', dir]);

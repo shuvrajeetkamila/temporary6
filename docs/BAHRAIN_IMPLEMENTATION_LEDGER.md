@@ -31,11 +31,11 @@
 ## Final Deliverable & Build Artifact Verification
 
 - **APK File**: `artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk`
-- **Exact File Size**: `2,893,421` bytes (2.76 MB)
-- **SHA-256 Digest**: `74c2328c58edd1a1895a96976e88e05d3c537d42269987ac372f1b97bc25686d`
+- **Exact File Size**: `2,913,901` bytes (2.78 MB)
+- **SHA-256 Digest**: `3154ee6ddffedc46138d0684ba6a98a85ac7f4e7f471a160a316dd677f68d8a4`
 - **Application ID / Package**: `ai.example.bahrain.islandkingdom`
 - **Target SDK**: 34 (Android 14) | **Min SDK**: 26 (Android 8.0 Oreo+)
 - **Packaged Native ABIs**: `arm64-v8a`, `armeabi-v7a`, `x86`, `x86_64` (universal device support)
 - **Automated Test Results**: 13 of 13 JUnit test suites passed (100% test pass rate across all modules)
-- **Country-Identity Linter**: 0 forbidden identifiers or non-Bahrain markers detected across 69 scanned files
+- **Country-Identity Linter**: 0 forbidden identifiers or non-Bahrain markers detected across 72 scanned files
 - **Standalone Offline Capability**: Standalone APK containing all geodata, manifests, shaders, procedural asset generators, and offline simulation loop. Zero required internet connections or third-party proprietary services.

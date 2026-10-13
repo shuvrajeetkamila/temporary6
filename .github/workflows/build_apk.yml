@@ -59,7 +59,13 @@ jobs:
       - name: Stage Universal APK and Checksums
         run: |
           mkdir -p artifacts
-          cp android/app/build/outputs/apk/debug/app-debug.apk artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk
+          FOUND_APK=$(find android/ -name "*.apk" | head -n 1)
+          if [ -z "$FOUND_APK" ]; then
+            echo "Error: No APK file found in android/ directory!"
+            exit 1
+          fi
+          echo "Found APK at: $FOUND_APK"
+          cp "$FOUND_APK" artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk
           sha256sum artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk > artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk.sha256
           sha256sum artifacts/Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk > SHA256SUMS
           cp SHA256SUMS artifacts/

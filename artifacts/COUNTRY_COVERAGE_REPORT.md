@@ -3,7 +3,7 @@
 - **Package ID**: `ai.example.bahrain.islandkingdom`
 - **APK File**: `Bahrain-The-Island-Kingdom-EXTREME-DETAIL-v1.0.0.apk`
 - **Exact Size**: 2913901 bytes (2.78 MB)
-- **SHA-256**: `3154ee6ddffedc46138d0684ba6a98a85ac7f4e7f471a160a316dd677f68d8a4`
+- **SHA-256**: `9eca53a05d3626a917c4722056fad13b5e46b91911dda8bd1c03bf1e56ee042a`
 - **World Epoch**: 2026-10
 - **Master CRS**: WGS 84 / UTM Zone 39N (EPSG:32639) — True 1:1 local metre scale
 

@@ -1,7 +1,7 @@
 {
  "name": "Bahrain (main island)",
  "source": "Natural Earth 1:10m Admin 0 countries (public domain) via world-atlas@2",
- "note": "Simplified coastline. Muharraq, Hawar and smaller islands are not included in this file.",
+ "note": "Simplified coastline (hand-digitised). Main island from Natural Earth 1:10m; Muharraq added as an approximate lobe joined by a short causeway strip. Hawar and smaller islands are not included.",
  "ring": [
   [
    50.54991,
@@ -150,6 +150,62 @@
   [
    50.58591,
    26.24274
+  ],
+  [
+   50.588,
+   26.2465
+  ],
+  [
+   50.588,
+   26.26
+  ],
+  [
+   50.595,
+   26.276
+  ],
+  [
+   50.605,
+   26.288
+  ],
+  [
+   50.62,
+   26.295
+  ],
+  [
+   50.64,
+   26.296
+  ],
+  [
+   50.655,
+   26.288
+  ],
+  [
+   50.664,
+   26.275
+  ],
+  [
+   50.662,
+   26.262
+  ],
+  [
+   50.654,
+   26.254
+  ],
+  [
+   50.642,
+   26.2425
+  ],
+  [
+   50.625,
+   26.2395
+  ],
+  [
+   50.608,
+   26.238
+  ],
+  [
+   50.595,
+   26.2405
   ],
   [
    50.59311,

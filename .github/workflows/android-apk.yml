@@ -29,18 +29,22 @@ jobs:
         run: npm ci
 
       - name: Fetch real OpenStreetMap buildings and roads
+        id: fetch
         # Overpass can be slow or busy. If the fetch fails, the APK still builds with the procedural city.
         continue-on-error: true
         timeout-minutes: 25
         run: npm run fetch:osm
 
       - name: Report map data source
+        if: always()
         run: |
           if [ -s public/data/bahrain-osm.json ]; then
-            echo "Map data: OpenStreetMap extract, $(du -h public/data/bahrain-osm.json | cut -f1)"
+            MSG="Map data: OpenStreetMap extract ($(du -h public/data/bahrain-osm.json | cut -f1))"
           else
-            echo "Map data: procedural city (OSM fetch did not produce a file)"
+            MSG="Map data: PROCEDURAL CITY (OSM fetch failed: ${{ steps.fetch.outcome }}). See the fetch step log."
           fi
+          echo "$MSG"
+          echo "$MSG" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run tests
         run: npm test

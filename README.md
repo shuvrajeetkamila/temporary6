@@ -13,10 +13,10 @@ npm run dev          # http://localhost:5173  (bound to 0.0.0.0)
 npm test             # headless physics + data checks (no browser needed)
 ```
 
-Optional, real buildings from OpenStreetMap (needs internet access to Overpass):
+Optional, real Bahrain buildings and roads from OpenStreetMap (HOT export on HDX, Overpass as fallback):
 
 ```bash
-npm run fetch:osm    # writes public/data/bahrain-osm.json (git-ignored, ~tens of MB)
+npm run fetch:osm    # writes public/data/bahrain-osm.json (git-ignored, about 5 MB)
 ```
 
 Without that file the game uses a deterministic **procedural city** around Manama. Force it with `?city=procedural`.
@@ -42,7 +42,9 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 ### Step 1 · Map generation
 - `src/land.js`, `src/data/bahrain-outline.json`: island outline (Natural Earth 1:10m, public domain), projected to metres and Chaikin-smoothed.
 - `src/geo.js`: local equirectangular projection centred on Bahrain (X = east, Z = south, Y up, sea level = 0).
-- `src/osm.js` + `scripts/fetch-osm.mjs`: Overpass query for `building=*` and `highway=*`, converted to world coordinates.
+- `scripts/fetch-osm.mjs`: downloads the HOT/HDX Bahrain building and road GeoPackages (about 31k buildings, 72k road segments,
+  updated monthly). If that fails, it runs an Overpass query. `scripts/gpkg.mjs` reads the GeoPackage with Node's built-in SQLite.
+- `src/osm.js`: converts either source to world coordinates. Roads are simplified to about 1.5 m tolerance to keep the file small.
   Buildings use `height`, else `building:levels × 3 m`, else 9 m. Roads get a width per highway class.
 - `src/procedural.js`: offline fallback (street grid, two arterials, seeded).
 - `src/world/world.js`: `ExtrudeGeometry` for buildings and island, ribbon meshes for roads, merged into a few draw calls.
@@ -89,13 +91,13 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 
 ## Known limitations (read before building on this)
 
-- **Muharraq and the smaller islands are missing from the coastline.** The offline outline comes from Natural Earth, which
-  only has the main island. Buildings in Muharraq are dropped by the on-island filter in `scripts/fetch-osm.mjs`,
-  and the Bahrain International Airport is on Muharraq, so the jet spawns over the main island.
-  The fix is to build the land polygon from OSM `natural=coastline` (or `landuse`), not implemented yet.
+- **Muharraq is an approximate outline.** It is a hand-digitised lobe joined to the main island by a short causeway strip.
+  It is not survey-accurate. Hawar and the smaller islands are not included. The airport is on Muharraq and is on land.
+  A proper fix would build the land polygon from OSM `natural=coastline`.
 - **Real OSM extract is not in git** (`public/data/*.json` is ignored). The procedural city is used until you run `npm run fetch:osm`.
+  The GitHub Actions APK build runs the fetch first, so the APK includes the real data when the download succeeds.
   OpenStreetMap data is © OpenStreetMap contributors, ODbL. The game shows that attribution when the extract is loaded.
-- **Performance on phones with the full OSM extract is untested.** A whole-country building set can be 100k+ footprints.
+- **Performance on phones with the full OSM extract is untested.** The Bahrain extract has about 31k footprints and about 72k road segments.
   The next step would be chunking the meshes into tiles with level-of-detail. Procedural mode is the safe default for low-end devices.
 - Building colliders are axis-aligned boxes around each footprint, so rotated walls are approximate.
 - The jet is an arcade model (a 2 m collider with lift applied from the code, not a wing simulation).
@@ -119,10 +121,11 @@ src/physics.js             cannon-es world, collider streaming, ground raycasts
 src/map.js                 minimap / full map, pan-zoom, tap-to-teleport
 src/input.js               keyboard + touch → one input object
 src/dataset.js             loads OSM extract or falls back to the procedural city
-src/osm.js                 Overpass JSON → world-space buildings and roads (also used by the fetch script)
+src/osm.js                 OSM features → world-space buildings and roads (HDX and Overpass)
 src/procedural.js          offline city generator
 src/geo.js, src/land.js    projection, polygons, island outline
-scripts/fetch-osm.mjs      Overpass downloader
+scripts/fetch-osm.mjs      HDX GeoPackage downloader, Overpass fallback
+scripts/gpkg.mjs           GeoPackage reader (node:sqlite)
 tests/                     node:test checks for physics and data
 android/                   Capacitor Android project
 ```

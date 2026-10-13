@@ -112,7 +112,7 @@ public class BoatPhysics {
         this.posX = x;
         this.posY = y;
         this.posZ = z;
-        this.speedMs = 0f;
+        this.currentSpeedKnots = 0f;
         this.velocityY = 0f;
     }
 }

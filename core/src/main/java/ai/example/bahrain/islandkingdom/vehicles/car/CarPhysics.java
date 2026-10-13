@@ -134,4 +134,5 @@ public class CarPhysics {
     public float getEngineRpm() { return engineRpm; }
     public int getCurrentGear() { return currentGear; }
     public float getHeadingRad() { return headingRad; }
+    public float getYawRad() { return headingRad; }
 }

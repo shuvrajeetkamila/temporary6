@@ -106,4 +106,5 @@ public class BoatPhysics {
     public float getSpeedKnots() { return currentSpeedKnots; }
     public float getEngineRpm() { return engineRpm; }
     public float getHeadingRad() { return headingRad; }
+    public float getYawRad() { return headingRad; }
 }

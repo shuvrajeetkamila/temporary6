@@ -93,34 +93,65 @@ public class BahrainGame extends Game {
      */
     public void stepSimulation(float dt) {
         double timeSec = System.currentTimeMillis() / 1000.0;
+        GameHUD.ControlMode mode = hud.getMode();
 
-        // Step Human
-        playerHuman.step(dt, hud.inputMoveY, hud.inputMoveX, hud.inputAction1, hud.inputAction2,
-                weatherSystem.getCurrentPreset().temperatureC, (float) waterSystem.getWaterSurfaceHeight(playerHuman.getPosX(), playerHuman.getPosZ(), timeSec));
+        if (mode == GameHUD.ControlMode.ON_FOOT) {
+            // Step Human
+            playerHuman.step(dt, hud.inputMoveY, hud.inputMoveX, hud.inputAction1, hud.inputAction2,
+                    weatherSystem.getCurrentPreset().temperatureC, (float) waterSystem.getWaterSurfaceHeight(playerHuman.getPosX(), playerHuman.getPosZ(), timeSec));
 
-        // Step Car
-        playerCar.step(dt, hud.inputAction1 ? 1.0f : 0.0f, hud.inputAction2 ? 1.0f : 0.0f, hud.inputMoveX,
-                terrainGenerator.getBiomeAtUtm(playerCar.getPosX(), playerCar.getPosZ()));
+            // Passive idle vehicles
+            playerCar.step(dt, 0.0f, 1.0f, 0.0f, terrainGenerator.getBiomeAtUtm(playerCar.getPosX(), playerCar.getPosZ()));
+            playerBoat.step(dt, 0.0f, 0.0f, waterSystem, timeSec);
+            playerHeli.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerHeli.getPosX(), playerHeli.getPosZ()));
 
-        // Step Boat
-        playerBoat.step(dt, hud.inputAction1 ? 1.0f : 0.0f, hud.inputMoveX, waterSystem, timeSec);
+            floatingOrigin.checkAndRebase(playerHuman.getPosX(), playerHuman.getPosY(), playerHuman.getPosZ());
+            chunkStreamer.update(playerHuman.getPosX(), playerHuman.getPosZ(), 0.0, 0.0);
+            trafficSystem.update(dt, playerHuman.getPosX(), playerHuman.getPosZ());
 
-        // Step Helicopter
-        playerHeli.step(dt, hud.inputAction1 ? 0.85f : 0.0f, hud.inputMoveY, hud.inputMoveX,
-                hud.inputAction2 ? 0.5f : 0.0f, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerHeli.getPosX(), playerHeli.getPosZ()));
+        } else if (mode == GameHUD.ControlMode.CAR) {
+            float throttle = Math.max(0.0f, hud.inputMoveY);
+            if (hud.inputAction1) throttle = 1.0f;
+            float brake = hud.inputAction2 ? 1.0f : (hud.inputMoveY < -0.1f ? 0.75f : 0.0f);
 
-        // Step Aeroplane
-        playerPlane.step(dt, hud.inputAction1 ? 1.0f : 0.0f, hud.inputMoveY, hud.inputMoveX,
-                0.0f, hud.inputAction2, weatherSystem, 5.0f);
+            playerCar.step(dt, throttle, brake, hud.inputMoveX, terrainGenerator.getBiomeAtUtm(playerCar.getPosX(), playerCar.getPosZ()));
+            playerHuman.teleport(playerCar.getPosX(), playerCar.getPosY(), playerCar.getPosZ());
 
-        // Update Traffic
-        trafficSystem.update(dt, playerHuman.getPosX(), playerHuman.getPosZ());
+            playerBoat.step(dt, 0.0f, 0.0f, waterSystem, timeSec);
+            playerHeli.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerHeli.getPosX(), playerHeli.getPosZ()));
 
-        // Update Streaming Chunks around player focus
-        chunkStreamer.update(playerHuman.getPosX(), playerHuman.getPosZ(), 0.0, 0.0);
+            floatingOrigin.checkAndRebase(playerCar.getPosX(), playerCar.getPosY(), playerCar.getPosZ());
+            chunkStreamer.update(playerCar.getPosX(), playerCar.getPosZ(), 0.0, 0.0);
+            trafficSystem.update(dt, playerCar.getPosX(), playerCar.getPosZ());
 
-        // Check Floating Origin Rebase
-        floatingOrigin.checkAndRebase(playerHuman.getPosX(), playerHuman.getPosY(), playerHuman.getPosZ());
+        } else if (mode == GameHUD.ControlMode.BOAT) {
+            float throttle = Math.max(0.0f, hud.inputMoveY);
+            if (hud.inputAction1) throttle = 1.0f;
+
+            playerBoat.step(dt, throttle, hud.inputMoveX, waterSystem, timeSec);
+            playerHuman.teleport(playerBoat.getPosX(), playerBoat.getPosY(), playerBoat.getPosZ());
+
+            playerCar.step(dt, 0.0f, 1.0f, 0.0f, terrainGenerator.getBiomeAtUtm(playerCar.getPosX(), playerCar.getPosZ()));
+            playerHeli.step(dt, 0.0f, 0.0f, 0.0f, 0.0f, weatherSystem, (float) terrainGenerator.getElevationAtUtm(playerHeli.getPosX(), playerHeli.getPosZ()));
+
+            floatingOrigin.checkAndRebase(playerBoat.getPosX(), playerBoat.getPosY(), playerBoat.getPosZ());
+            chunkStreamer.update(playerBoat.getPosX(), playerBoat.getPosZ(), 0.0, 0.0);
+            trafficSystem.update(dt, playerBoat.getPosX(), playerBoat.getPosZ());
+
+        } else if (mode == GameHUD.ControlMode.HELICOPTER) {
+            float collective = hud.inputAction1 ? 0.95f : (hud.inputAction2 ? 0.2f : 0.65f);
+
+            playerHeli.step(dt, collective, hud.inputMoveY, hud.inputMoveX, 0.0f, weatherSystem,
+                    (float) terrainGenerator.getElevationAtUtm(playerHeli.getPosX(), playerHeli.getPosZ()));
+            playerHuman.teleport(playerHeli.getPosX(), playerHeli.getPosY(), playerHeli.getPosZ());
+
+            playerCar.step(dt, 0.0f, 1.0f, 0.0f, terrainGenerator.getBiomeAtUtm(playerCar.getPosX(), playerCar.getPosZ()));
+            playerBoat.step(dt, 0.0f, 0.0f, waterSystem, timeSec);
+
+            floatingOrigin.checkAndRebase(playerHeli.getPosX(), playerHeli.getPosY(), playerHeli.getPosZ());
+            chunkStreamer.update(playerHeli.getPosX(), playerHeli.getPosZ(), 0.0, 0.0);
+            trafficSystem.update(dt, playerHeli.getPosX(), playerHeli.getPosZ());
+        }
     }
 
     @Override

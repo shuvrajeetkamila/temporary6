@@ -127,4 +127,7 @@ public class HelicopterPhysics {
     public float getRotorRpm() { return rotorRpm; }
     public float getBrownoutIntensity() { return brownoutIntensity; }
     public float getYawRad() { return yawRad; }
+    public float getAirspeedKnots() {
+        return (float) (Math.sqrt(velocityX * velocityX + velocityZ * velocityZ) * 1.94384);
+    }
 }

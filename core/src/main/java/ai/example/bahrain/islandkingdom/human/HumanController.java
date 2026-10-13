@@ -106,6 +106,7 @@ public class HumanController {
         if (dirLen > 0.001f) {
             velocityX = (moveForward / dirLen) * targetSpeed;
             velocityZ = (moveStrafe / dirLen) * targetSpeed;
+            facingRad = (float) Math.atan2(moveStrafe, moveForward);
         } else {
             velocityX = 0.0f;
             velocityZ = 0.0f;
@@ -128,9 +129,24 @@ public class HumanController {
         }
     }
 
+    private float facingRad = 0.0f;
+
+    public void teleport(double x, double y, double z) {
+        this.posX = x;
+        this.posY = y;
+        this.posZ = z;
+        this.velocityX = 0.0f;
+        this.velocityY = 0.0f;
+        this.velocityZ = 0.0f;
+    }
+
     public double getPosX() { return posX; }
     public double getPosY() { return posY; }
     public double getPosZ() { return posZ; }
+    public float getFacingRad() { return facingRad; }
+    public float getSpeedMs() { return (float) Math.sqrt(velocityX * velocityX + velocityZ * velocityZ); }
+    public float getStaminaPercent() { return stamina / MAX_STAMINA; }
+    public float getHeatAccumulation() { return inShadeOrHub ? 0.0f : Math.max(0.0f, 100.0f - stamina); }
     public LocomotionState getState() { return state; }
     public float getStamina() { return stamina; }
     public void setInShadeOrHub(boolean shade) { this.inShadeOrHub = shade; }

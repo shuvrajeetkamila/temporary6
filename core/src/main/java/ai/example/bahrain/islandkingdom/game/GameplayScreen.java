@@ -289,7 +289,8 @@ public class GameplayScreen implements Screen {
         float camZ = cameraTarget.z + (float) (cameraDist * Math.cos(radPitch) * Math.cos(radYaw));
 
         // Smooth camera lerp
-        currentCameraPos.lerp(camX, camY, camZ, dt * 10f);
+        Vector3 targetCam = new Vector3(camX, camY, camZ);
+        currentCameraPos.lerp(targetCam, dt * 10f);
 
         camera.position.set(currentCameraPos);
         camera.lookAt(cameraTarget);

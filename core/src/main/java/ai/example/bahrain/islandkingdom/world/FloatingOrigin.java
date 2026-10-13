@@ -79,6 +79,10 @@ public class FloatingOrigin {
         return (float) (globalZ - originGlobalZ);
     }
 
+    public float[] worldToLocal(double globalX, double globalY, double globalZ) {
+        return new float[] { toLocalX(globalX), toLocalY(globalY), toLocalZ(globalZ) };
+    }
+
     public double toGlobalX(float localX) {
         return originGlobalX + localX;
     }

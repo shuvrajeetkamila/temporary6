@@ -1,0 +1,16 @@
+=== FAILED TEST XML RESULTS ===
+find: ‘core/build/test-results/test’: No such file or directory
+=== GREP TEST RUN LOG ===
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Task :core:compileJava FAILED
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/vehicles/boat/BoatPhysics.java:115: error: cannot find symbol
+        this.speedMs = 0f;
+            ^
+  symbol: variable speedMs
+1 error
+--
+> Run with --scan to get full insights.
+
+BUILD FAILED in 23s
+1 actionable task: 1 executed

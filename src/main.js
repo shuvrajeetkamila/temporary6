@@ -393,8 +393,9 @@ function spawnPoints() {
   const human = findFreeSpot(...nearestLandPoint(cx, cz, land));
   const car = findFreeSpot(...nearestLandPoint(human[0] + 45, human[1] + 30, land));
   const boat = nearestSeaPoint(cx, cz, land, 30);
-  const heli = nearestLandPoint(...lonLatToXZ(50.5, 26.13), land); // Isa Town area
-  const plane = nearestLandPoint(...lonLatToXZ(50.555, 26.13), land); // Riffa area
+  // Heli (Isa Town) and plane (Riffa) also avoid building footprints so no body starts inside a block.
+  const heli = findFreeSpot(...nearestLandPoint(...lonLatToXZ(50.5, 26.13), land)); // Isa Town area
+  const plane = findFreeSpot(...nearestLandPoint(...lonLatToXZ(50.555, 26.13), land)); // Riffa area
   return { human, car, boat, heli, plane };
 }
 

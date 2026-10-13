@@ -74,14 +74,18 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 - `capacitor.config.json` (appId `com.shuvrajeetkamila.bahrain3d`, webDir `dist`).
 - `android/` is the generated native project. `AndroidManifest.xml` sets `android:hardwareAccelerated="true"`.
   Android System WebView supports WebGL2 on any device with OpenGL ES 3.0, which covers current phones.
-- Build flow:
+- Build flow, in order:
   ```bash
-  npm run cap:sync          # vite build + copy dist/ into the Android project
-  npx cap open android      # opens Android Studio → Build → Build Bundle(s) / APK(s)
-  # or, with JDK 17+ and the Android SDK installed:
-  cd android && ./gradlew assembleDebug
+  npm install
+  npm run fetch:osm         # optional: writes public/data/bahrain-osm.json (otherwise the procedural city is used)
+  npm test                  # headless checks
+  npm run build             # vite build → dist/
+  npx cap sync android      # copy dist/ into the Android project (same as npm run cap:sync)
+  npx cap open android      # opens the project in Android Studio
   ```
-  Note: the plan's `npx cap build android` is not a Capacitor command. `cap sync` and `cap open` are the real ones.
+  In Android Studio, choose **Build → Build Bundle(s) / APK(s) → Build APK(s)**.
+  The plan's `npx cap build android` is not a Capacitor command. `cap sync` and `cap open` are the real ones.
+  Command-line alternative with JDK 17+ and the Android SDK: `cd android && ./gradlew assembleDebug`.
 
 ## Known limitations (read before building on this)
 
@@ -95,9 +99,12 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
   The next step would be chunking the meshes into tiles with level-of-detail. Procedural mode is the safe default for low-end devices.
 - Building colliders are axis-aligned boxes around each footprint, so rotated walls are approximate.
 - The jet is an arcade model (a 2 m collider with lift applied from the code, not a wing simulation).
-- Models and textures are procedural, not GLB/GLTF assets. Dropping in real models is the natural next step.
-- Visual checks were not run inside a browser in this environment (no browser binary could be launched here).
-  The physics and data pipelines are verified by `npm test`. Please check the look and feel in the live preview.
+- **GLB/GLTF model loading is deferred (next step).** All vehicles and people are primitive models and textures are procedural.
+  Each builder in `src/entities/models.js` can later be replaced by a `GLTFLoader` result without touching physics.
+- Browser check: the game was loaded in headless Chromium in the build sandbox. It rendered the city, HUD and map with no
+  page errors, and the spawn points were fixed to avoid building footprints. Vehicle spawns were not checked in-game,
+  so please check them in the live preview. `npm test` covers the physics and data pipelines.
+- The APK is not built in the sandbox (no JDK or Android SDK there). Build it in Android Studio as described below.
 
 ## Project layout
 

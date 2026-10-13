@@ -42,6 +42,7 @@ jobs:
             MSG="Map data: OpenStreetMap extract ($(du -h public/data/bahrain-osm.json | cut -f1))"
           else
             MSG="Map data: PROCEDURAL CITY (OSM fetch failed: ${{ steps.fetch.outcome }}). See the fetch step log."
+            echo "::warning::$MSG"
           fi
           echo "$MSG"
           echo "$MSG" >> "$GITHUB_STEP_SUMMARY"

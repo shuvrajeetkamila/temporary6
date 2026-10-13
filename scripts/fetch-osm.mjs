@@ -19,6 +19,21 @@ import { getLandPolygon } from '../src/land.js';
 import { readFeatures } from './gpkg.mjs';
 
 const execFileAsync = promisify(execFile);
+
+/** Node's fetch() hides the real reason (DNS, TLS, reset) in err.cause. */
+function describe(err) {
+  const c = err?.cause;
+  return c ? `${err.message}: ${c.code ?? ''} ${c.message ?? c}`.trim() : String(err?.message ?? err);
+}
+
+/** Prints a message to the log, and as a GitHub Actions annotation when running in CI. */
+function note(level, msg) {
+  if (process.env.GITHUB_ACTIONS) {
+    console.log(`::${level}::${msg.replace(/\r?\n/g, ' ')}`);
+  } else {
+    (level === 'error' ? console.error : console.warn)(msg);
+  }
+}
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(root, 'public', 'data', 'bahrain-osm.json');
 const ATTRIBUTION = '© OpenStreetMap contributors (ODbL)';
@@ -94,7 +109,7 @@ async function loadFromOverpass(land) {
       return overpassToDataset(await res.json(), land);
     } catch (err) {
       lastErr = err;
-      console.warn(`  failed: ${err.message}`);
+      note('warning', `Overpass ${url} failed: ${describe(err)}`);
     }
   }
   throw lastErr;
@@ -108,7 +123,7 @@ try {
   result = await loadFromHdx(land);
   origin = 'hdx';
 } catch (err) {
-  console.warn(`HDX download failed: ${err.message}`);
+  note('warning', `HDX download failed: ${describe(err)}`);
 }
 
 if (!result) {
@@ -116,8 +131,8 @@ if (!result) {
     result = await loadFromOverpass(land);
     origin = 'overpass';
   } catch (err) {
-    console.error(`Overpass failed too: ${err.message}`);
-    console.error('No map file written; the game will use the procedural city.');
+    note('error', `Overpass failed too: ${describe(err)}`);
+    note('error', 'No map file written; the game will use the procedural city.');
     process.exit(1);
   }
 }

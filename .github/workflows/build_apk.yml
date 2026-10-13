@@ -45,7 +45,16 @@ jobs:
         run: |
           cd android
           chmod +x ./gradlew
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug --stacktrace 2>&1 | tee ../build.log || {
+            mkdir -p ../artifacts
+            cat ../build.log > ../artifacts/build_fail.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add ../artifacts/build_fail.txt
+            git commit -m "diagnostics: android build failure log [skip ci]"
+            git push origin arena/f4abc217-temporary6
+            exit 1
+          }
 
       - name: Stage Universal APK and Checksums
         run: |

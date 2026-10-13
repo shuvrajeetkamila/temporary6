@@ -1,0 +1,8 @@
+{
+  "appId": "ai.example.bahrain.islandkingdom",
+  "appName": "Bahrain: The Island Kingdom",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

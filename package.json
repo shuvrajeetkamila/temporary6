@@ -1,0 +1,21 @@
+{
+  "name": "bahrain-3d-island-kingdom",
+  "version": "1.0.0",
+  "description": "Bahrain: 3D OpenStreetMap Open-World Simulation with 5 Controllable Entities and Interactive Teleport Map",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 3000"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "cannon-es": "^0.20.0",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

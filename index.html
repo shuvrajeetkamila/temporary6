@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Bahrain: The Island Kingdom — 3D OpenStreetMap Sandbox</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- 3D WebGL Canvas Viewport -->
+  <div id="canvas-container"></div>
+
+  <!-- HUD Overlay Layer -->
+  <div id="ui-overlay">
+    <!-- Top-Left: Telemetry & Location Banner -->
+    <div class="hud-top-left">
+      <div class="hud-pill location-pill">
+        <span class="loc-en">Bab Al Bahrain, Manama</span>
+        <span class="loc-ar">باب البحرين — العاصمة</span>
+      </div>
+      <div class="hud-pill telemetry-pill">
+        <span id="hud-mode-badge" class="mode-badge">HUMAN</span>
+        <span id="hud-speed-val" class="speed-val">0 KM/H</span>
+      </div>
+    </div>
+
+    <!-- Top-Right: Circular Minimap Radar -->
+    <div class="hud-top-right">
+      <div class="minimap-container" title="Tap to Open Fullscreen Map">
+        <canvas id="minimap-canvas"></canvas>
+        <div class="minimap-badge">TAP MAP (M)</div>
+      </div>
+    </div>
+
+    <!-- Center Floating Prompt Box -->
+    <div id="hud-prompt-box" class="hud-prompt-box hidden">
+      [F / ENTER] TO ENTER VEHICLE
+    </div>
+
+    <!-- Bottom-Left: Touch Analog Thumbstick -->
+    <div class="hud-bottom-left">
+      <div id="joystick-zone" class="joystick-zone">
+        <div id="joystick-knob" class="joystick-knob"></div>
+      </div>
+    </div>
+
+    <!-- Bottom-Center: 5 Locomotion Mode Selector -->
+    <div class="hud-bottom-center">
+      <div class="vehicle-switcher-bar">
+        <button class="vehicle-mode-btn active" data-mode="human">🚶 FOOT (1)</button>
+        <button class="vehicle-mode-btn" data-mode="car">🚗 CAR (2)</button>
+        <button class="vehicle-mode-btn" data-mode="boat">⛵ BOAT (3)</button>
+        <button class="vehicle-mode-btn" data-mode="heli">🚁 HELI (4)</button>
+        <button class="vehicle-mode-btn" data-mode="plane">✈️ PLANE (5)</button>
+      </div>
+      <div class="attribution-line">© OpenStreetMap contributors • WGS84 / EPSG:32639</div>
+    </div>
+
+    <!-- Bottom-Right: Mobile Touch Action Buttons -->
+    <div class="hud-bottom-right">
+      <button id="btn-interact" class="action-btn btn-interact">ENTER</button>
+      <button id="btn-jump" class="action-btn btn-jump">BRAKE</button>
+      <button id="btn-sprint" class="action-btn btn-sprint">BOOST</button>
+    </div>
+  </div>
+
+  <!-- Fullscreen Interactive Map Modal Root -->
+  <div id="map-modal-root"></div>
+
+  <!-- Vite Module Entry -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+=== FAILED TEST XML RESULTS ===
+find: ‘core/build/test-results/test’: No such file or directory
+=== GREP TEST RUN LOG ===
+
+> Task :core:compileJava
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:109: error: cannot find symbol
+        float[] playerLocal = game.floatingOrigin.worldToLocal(
+                                                 ^
+  symbol:   method worldToLocal(double,double,double)
+  location: variable floatingOrigin of type FloatingOrigin
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:111: error: cannot find symbol
+        float[] carLocal = game.floatingOrigin.worldToLocal(
+                                              ^
+  symbol:   method worldToLocal(double,double,double)
+  location: variable floatingOrigin of type FloatingOrigin
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:113: error: cannot find symbol
+        float[] boatLocal = game.floatingOrigin.worldToLocal(
+                                               ^
+  symbol:   method worldToLocal(double,double,double)
+  location: variable floatingOrigin of type FloatingOrigin
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:115: error: cannot find symbol
+        float[] heliLocal = game.floatingOrigin.worldToLocal(
+                                               ^
+  symbol:   method worldToLocal(double,double,double)
+  location: variable floatingOrigin of type FloatingOrigin
+/home/runner/work/temporary6/temporary6/core/src/main/java/ai/example/bahrain/islandkingdom/game/GameplayScreen.java:292: error: method lerp in class Vector3 cannot be applied to given types;
+        currentCameraPos.lerp(camX, camY, camZ, dt * 10f);
+                        ^
+  required: Vector3,float
+  found:    float,float,float,float
+--
+5 errors
+
+> Task :core:compileJava FAILED
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_4-1791872357523.json
+
+FAILURE: Build failed with an exception.
+
+--
+> Run with --scan to get full insights.
+
+BUILD FAILED in 33s
+1 actionable task: 1 executed

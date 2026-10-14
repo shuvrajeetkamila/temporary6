@@ -50,12 +50,18 @@ export function addLandCollider(world, geometry) {
  * Streams axis-aligned box colliders for buildings near the focus point.
  * Keeping every building as a physics body would not scale to a full OSM extract.
  */
+const GRID_CELL_M = 100;
+const BLOCK_PAD_M = 1.5; // clearance kept between a spawn point and a building wall
+
 export class BuildingColliders {
   constructor(world, buildings, maxBodies = 900) {
     this.world = world;
     this.maxBodies = maxBodies;
     this.active = 0;
     this.items = [];
+    // Spatial grid: each building is listed in every cell its box (plus padding) touches,
+    // so a point query only needs the one cell it falls in.
+    this.grid = new Map();
     for (const b of buildings) {
       if (!b.pts || b.pts.length < 3) continue;
       let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
@@ -65,15 +71,38 @@ export class BuildingColliders {
         if (z < minZ) minZ = z;
         if (z > maxZ) maxZ = z;
       }
-      this.items.push({
+      const item = {
         cx: (minX + maxX) / 2,
         cz: (minZ + maxZ) / 2,
         hx: Math.max(0.1, (maxX - minX) / 2),
         hz: Math.max(0.1, (maxZ - minZ) / 2),
         h: b.h,
         body: null,
-      });
+      };
+      this.items.push(item);
+      const i0 = Math.floor((item.cx - item.hx - BLOCK_PAD_M) / GRID_CELL_M);
+      const i1 = Math.floor((item.cx + item.hx + BLOCK_PAD_M) / GRID_CELL_M);
+      const k0 = Math.floor((item.cz - item.hz - BLOCK_PAD_M) / GRID_CELL_M);
+      const k1 = Math.floor((item.cz + item.hz + BLOCK_PAD_M) / GRID_CELL_M);
+      for (let i = i0; i <= i1; i++) {
+        for (let k = k0; k <= k1; k++) {
+          const key = i * 100003 + k;
+          let list = this.grid.get(key);
+          if (!list) this.grid.set(key, (list = []));
+          list.push(item);
+        }
+      }
     }
+  }
+
+  /** True if (x, z) is inside a building footprint plus a small clearance. */
+  blocked(x, z, pad = BLOCK_PAD_M) {
+    const list = this.grid.get(Math.floor(x / GRID_CELL_M) * 100003 + Math.floor(z / GRID_CELL_M));
+    if (!list) return false;
+    for (const it of list) {
+      if (Math.abs(x - it.cx) < it.hx + pad && Math.abs(z - it.cz) < it.hz + pad) return true;
+    }
+    return false;
   }
 
   update(x, z, radius = 230) {

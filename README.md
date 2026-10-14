@@ -10,7 +10,7 @@ Stack: **Vite · Three.js · cannon-es · Capacitor 8** (no external model or te
 ```bash
 npm install
 npm run dev          # http://localhost:5173  (bound to 0.0.0.0)
-npm test             # headless physics + data checks (no browser needed)
+npm test             # headless physics, spawn and data checks (no browser needed)
 ```
 
 Optional, real Bahrain buildings and roads from OpenStreetMap (HOT export on HDX, Overpass as fallback):
@@ -21,6 +21,9 @@ npm run fetch:osm    # writes public/data/bahrain-osm.json (git-ignored, about 5
 
 Without that file the game uses a deterministic **procedural city** around Manama. Force it with `?city=procedural`.
 Add `?touch=1` to show the on-screen controls on a desktop.
+Add `?quality=low` or `?quality=high` to override the default. Touch devices start at low (1× pixels, no shadows, 1.5 km draw distance).
+The game saves your position every 5 s in `localStorage` and resumes there on the next visit, if that spot is still on land and clear of buildings.
+If the world fails to load, an error panel offers **Retry** and **Procedural city**. WebGL 2 is required.
 
 ## Controls
 
@@ -48,6 +51,9 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
   Buildings use `height`, else `building:levels × 3 m`, else 9 m. Roads get a width per highway class.
 - `src/procedural.js`: offline fallback (street grid, two arterials, seeded).
 - `src/world/world.js`: `ExtrudeGeometry` for buildings and island, ribbon meshes for roads, merged into a few draw calls.
+  Buildings are split into 1.5 km chunks. Chunks farther than the draw distance are hidden. Each update checks the distance (twice a second).
+- `src/spawn.js`: spawn points. The player starts at the city centre on land and clear of buildings. The car starts beside the player, the boat
+  is at sea near the city, the helicopter is in the Isa Town area, and the jet is on the airport at Muharraq, facing runway 12. Building checks use the spatial grid of colliders.
 
 ### Step 2 · Physics and vehicles
 - `src/physics.js`: cannon-es world. The island is a static triangle mesh. Building boxes are **streamed** around the player (max 900 bodies), so large OSM extracts don't overload the physics engine.
@@ -61,7 +67,8 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 
 ### Step 3 · Visuals
 - Facade texture (procedural canvas): windows with random lit windows, which glow at night through an emissive map.
-- Asphalt and sand textures are generated on a canvas, so no image files are needed.
+- Asphalt and sand textures are generated on a canvas, so no image files are needed. Asphalt also has a generated normal map (`createAsphaltNormalMap`).
+- `src/world/extras.js`: a 3.7 km runway 12/30 at the airport, and about 2,500 instanced palms along quiet roads (residential, service, living street, unclassified; `street` in the procedural city).
 - Sea: custom animated shader with a fresnel term and a sun glint (instead of `THREE.Water`, which needs a normal-map image).
 - Sky gradient, fog, soft shadows that follow the player, and a day/night blend.
 - Models are primitive-built (`src/entities/models.js`). Each builder can later be replaced by a `GLTFLoader` result without touching physics.
@@ -75,12 +82,13 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 ### Step 5 · Android (Capacitor)
 - `capacitor.config.json` (appId `com.shuvrajeetkamila.bahrain3d`, webDir `dist`).
 - `android/` is the generated native project. `AndroidManifest.xml` sets `android:hardwareAccelerated="true"`.
+- CI (`.github/workflows/android-apk.yml`) builds a **debug** APK on push to this branch and uploads it as an artifact. It is **not signed as a release**, and no release APK is built.
   Android System WebView supports WebGL2 on any device with OpenGL ES 3.0, which covers current phones.
 - Build flow, in order:
   ```bash
   npm install
   npm run fetch:osm         # optional: writes public/data/bahrain-osm.json (otherwise the procedural city is used)
-  npm test                  # headless checks
+  npm test                  # headless checks (spawn, physics, data)
   npm run build             # vite build → dist/
   npx cap sync android      # copy dist/ into the Android project (same as npm run cap:sync)
   npx cap open android      # opens the project in Android Studio
@@ -98,14 +106,15 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
   The GitHub Actions APK build runs the fetch first, so the APK includes the real data when the download succeeds.
   OpenStreetMap data is © OpenStreetMap contributors, ODbL. The game shows that attribution when the extract is loaded.
 - **Performance on phones with the full OSM extract is untested.** The Bahrain extract has about 31k footprints and about 72k road segments.
-  The next step would be chunking the meshes into tiles with level-of-detail. Procedural mode is the safe default for low-end devices.
+  Building meshes are chunked and distance-culled, but there is no level-of-detail yet. Procedural mode is the safe default for low-end devices.
 - Building colliders are axis-aligned boxes around each footprint, so rotated walls are approximate.
 - The jet is an arcade model (a 2 m collider with lift applied from the code, not a wing simulation).
 - **GLB/GLTF model loading is deferred (next step).** All vehicles and people are primitive models and textures are procedural.
   Each builder in `src/entities/models.js` can later be replaced by a `GLTFLoader` result without touching physics.
-- Browser check: the game was loaded in headless Chromium in the build sandbox. It rendered the city, HUD and map with no
-  page errors, and the spawn points were fixed to avoid building footprints. Vehicle spawns were not checked in-game,
-  so please check them in the live preview. `npm test` covers the physics and data pipelines.
+- Browser check: the latest changes (runway, palms, normal map, quality, saved spot, error panel) were **not** run in a browser.
+  The sandbox could not download a Chromium binary. They were checked with `npm test`, a Vite build, and a Node check of the palm and runway code.
+  Please check them in the live preview. The runway heading (runway 12, about 120°) is from memory and has not been checked against survey data.
+- Dev-only audit: `npm audit` reports 3 moderate `uuid` advisories inside `@capacitor/cli` (build tool, not in the APK). The suggested fix is a breaking downgrade, so it was not applied.
 - The APK is not built in the sandbox (no JDK or Android SDK there). Build it in Android Studio as described below.
 
 ## Project layout
@@ -113,8 +122,10 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 ```
 index.html                 HUD, minimap, touch controls, help overlay
 src/main.js                game loop, state (on foot / driving), camera, prompts, teleport
-src/world/world.js         island, buildings, roads, sea, sky, lights, day/night
-src/world/textures.js      canvas textures (windows, asphalt, sand)
+src/world/world.js         island, buildings (chunked), roads, sea, sky, lights, day/night
+src/world/textures.js      canvas textures (windows, asphalt, sand, asphalt normal map)
+src/world/extras.js        airport runway, palm trees
+src/spawn.js               spawn points on land, clear of buildings; airport spawn for the jet
 src/entities/vehicles.js   Human, Car, Boat, Plane, Helicopter controllers
 src/entities/models.js     primitive models
 src/physics.js             cannon-es world, collider streaming, ground raycasts
@@ -126,7 +137,7 @@ src/procedural.js          offline city generator
 src/geo.js, src/land.js    projection, polygons, island outline
 scripts/fetch-osm.mjs      HDX GeoPackage downloader, Overpass fallback
 scripts/gpkg.mjs           GeoPackage reader (node:sqlite)
-tests/                     node:test checks for physics and data
+tests/                     node:test checks for physics, spawns and data
 android/                   Capacitor Android project
 ```
 

@@ -108,3 +108,59 @@ export function createSandTexture(renderer, seed = 11) {
   t.repeat.set(1 / 40, 1 / 40);
   return t;
 }
+
+/**
+ * Asphalt normal map: a height field from smoothed noise, converted to normals.
+ * Uses a DataTexture (linear, not sRGB) that tiles, with the same UVs as the asphalt colour map.
+ */
+export function createAsphaltNormalMap(seed = 5) {
+  const S = 256;
+  let s = seed;
+  const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  let h = new Float32Array(S * S);
+  for (let i = 0; i < h.length; i++) h[i] = rnd();
+  // three box-blur passes with wrap-around give a soft, tiling height field
+  for (let pass = 0; pass < 3; pass++) {
+    const next = new Float32Array(S * S);
+    for (let y = 0; y < S; y++) {
+      for (let x = 0; x < S; x++) {
+        let sum = 0;
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            sum += h[((y + dy + S) % S) * S + ((x + dx + S) % S)];
+          }
+        }
+        next[y * S + x] = sum / 9;
+      }
+    }
+    h = next;
+  }
+  const data = new Uint8Array(S * S * 4);
+  const strength = 6;
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      const dhx = h[y * S + ((x + 1) % S)] - h[y * S + ((x - 1 + S) % S)];
+      const dhy = h[((y + 1) % S) * S + x] - h[((y - 1 + S) % S) * S + x];
+      let nx = -dhx * strength;
+      let ny = -dhy * strength;
+      let nz = 1;
+      const len = Math.hypot(nx, ny, nz);
+      nx /= len;
+      ny /= len;
+      nz /= len;
+      const o = (y * S + x) * 4;
+      data[o] = Math.round((nx * 0.5 + 0.5) * 255);
+      data[o + 1] = Math.round((ny * 0.5 + 0.5) * 255);
+      data[o + 2] = Math.round((nz * 0.5 + 0.5) * 255);
+      data[o + 3] = 255;
+    }
+  }
+  const tex = new THREE.DataTexture(data, S, S, THREE.RGBAFormat);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.generateMipmaps = true;
+  tex.needsUpdate = true;
+  return tex;
+}

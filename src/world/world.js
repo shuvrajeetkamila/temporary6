@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { WATER_Y } from '../config.js';
-import { createWindowTextures, createAsphaltTexture, createSandTexture } from './textures.js';
+import { createWindowTextures, createAsphaltTexture, createSandTexture, createAsphaltNormalMap } from './textures.js';
+import { addAirportRunway, addPalms } from './extras.js';
+import { lonLatToXZ } from '../geo.js';
 
 const LIGHTING = {
   day: {
@@ -128,6 +130,7 @@ export function buildWorld(scene, renderer, data) {
   const textures = {
     windows: createWindowTextures(renderer),
     asphalt: createAsphaltTexture(renderer),
+    asphaltNormal: createAsphaltNormalMap(),
     sand: createSandTexture(renderer),
   };
 
@@ -156,6 +159,7 @@ export function buildWorld(scene, renderer, data) {
   // so the renderer can skip chunks outside the camera view. A single merged mesh would draw the whole city every frame.
   const CHUNK_M = 1500;
   const chunks = new Map();
+  const buildingChunks = [];
   for (const b of data.buildings) {
     if (!b.pts || b.pts.length < 3) continue;
     let cx = 0;
@@ -168,7 +172,9 @@ export function buildWorld(scene, renderer, data) {
     cz /= b.pts.length;
     const key = `${Math.floor(cx / CHUNK_M)},${Math.floor(cz / CHUNK_M)}`;
     let chunk = chunks.get(key);
-    if (!chunk) chunks.set(key, (chunk = { roof: [], wall: [] }));
+    if (!chunk) {
+      chunks.set(key, (chunk = { roof: [], wall: [], cx: (Math.floor(cx / CHUNK_M) + 0.5) * CHUNK_M, cz: (Math.floor(cz / CHUNK_M) + 0.5) * CHUNK_M }));
+    }
     const shape = new THREE.Shape(b.pts.map(([x, z]) => new THREE.Vector2(x, -z)));
     const g = new THREE.ExtrudeGeometry(shape, { depth: b.h, bevelEnabled: false, steps: 1, curveSegments: 1 });
     g.rotateX(-Math.PI / 2);
@@ -189,7 +195,21 @@ export function buildWorld(scene, renderer, data) {
       m.receiveShadow = true;
       group.add(m);
     }
+    buildingChunks.push({ meshes: [roofMesh, wallMesh], cx: chunk.cx, cz: chunk.cz });
   }
+  // Distance culling: chunks beyond the draw distance are hidden. Frustum culling handles the rest.
+  let drawDistance = 2600;
+  let lodTimer = 0;
+  const applyLod = (focus) => {
+    for (const c of buildingChunks) {
+      const d = Math.hypot(c.cx - focus.x, c.cz - focus.z);
+      const visible = d <= drawDistance + CHUNK_M;
+      for (const m of c.meshes) m.visible = visible;
+    }
+  };
+
+  addAirportRunway(group);
+  addPalms(group, data.roads, data.land);
 
   // ---- roads --------------------------------------------------------------
   const ROAD_Y = 0.05;
@@ -229,6 +249,8 @@ export function buildWorld(scene, renderer, data) {
     rg.setIndex(idx);
     const roadMat = new THREE.MeshStandardMaterial({
       map: textures.asphalt,
+      normalMap: textures.asphaltNormal,
+      normalScale: new THREE.Vector2(0.5, 0.5),
       vertexColors: true,
       roughness: 0.75,
       metalness: 0,
@@ -294,8 +316,18 @@ export function buildWorld(scene, renderer, data) {
     sun,
     sky,
     landGeometry: landGeo,
+    /** Hides building chunks farther than `metres` from the player (applied about twice a second). */
+    setDrawDistance(metres) {
+      drawDistance = metres;
+      lodTimer = 1; // re-apply on the next update
+    },
     /** Called every frame. */
     update(dt, time, focus) {
+      lodTimer -= dt;
+      if (lodTimer <= 0) {
+        lodTimer = 0.5;
+        applyLod(focus);
+      }
       waterUniforms.uTime.value = time;
       sky.position.copy(focus);
       sun.position.set(focus.x - 900, 1300, focus.z + 700);

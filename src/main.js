@@ -8,20 +8,67 @@ import { Human, Car, Boat, Plane, Helicopter } from './entities/vehicles.js';
 import { createInput } from './input.js';
 import { GameMap } from './map.js';
 import { getLandPolygon } from './land.js';
-import { lonLatToXZ, nearestLandPoint, nearestSeaPoint, pointInPoly } from './geo.js';
-import { CITY_CENTER, PLACES, WATER_Y } from './config.js';
+import { lonLatToXZ, pointInPoly } from './geo.js';
+import { PLACES, WATER_Y } from './config.js';
+import { computeSpawns, findFreeSpot } from './spawn.js';
 
 const FIXED_DT = 1 / 60;
 const IDLE = { x: 0, y: 0, throttle: 0, brake: false, jump: false, run: false };
 const CAM_DISTANCE = { human: 6, car: 9, boat: 13, plane: 26, heli: 17 };
 const $ = (id) => document.getElementById(id);
 
+// ---------------------------------------------------------------- startup errors
+let startupDone = false;
+
+/** Shows a message on the loading overlay with retry and procedural-city buttons. */
+function showLoadError(message) {
+  if (startupDone) return;
+  $('loading').classList.remove('done');
+  $('loading-text').textContent = 'Could not start the game';
+  $('loading-error-text').textContent = message;
+  $('loading-error').classList.remove('hidden');
+}
+
+$('btn-retry').addEventListener('click', () => location.reload());
+$('btn-procedural').addEventListener('click', () => {
+  const url = new URL(location.href);
+  url.searchParams.set('city', 'procedural');
+  location.href = url.toString();
+});
+
+function webgl2Available() {
+  try {
+    return !!document.createElement('canvas').getContext('webgl2');
+  } catch {
+    return false;
+  }
+}
+
+if (!webgl2Available()) {
+  showLoadError('This browser or device does not support WebGL 2, which the game needs. Try a current Chrome, Edge or Firefox, or update Android System WebView.');
+  throw new Error('WebGL 2 is not available');
+}
+
+// Errors before the game is running are shown on the overlay. After startup they are only logged.
+window.addEventListener('error', (e) => showLoadError(e.message || 'Unexpected error'));
+window.addEventListener('unhandledrejection', (e) => showLoadError(String(e.reason?.message ?? e.reason)));
+// Slow devices: after two minutes, offer the lighter procedural city instead of spinning forever.
+setTimeout(() => {
+  if (!startupDone) showLoadError('Loading is taking longer than expected. On slow devices, the procedural city loads faster.');
+}, 120000);
+
 // ---------------------------------------------------------------- renderer / camera
 const canvas = $('scene');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// Quality: 'high' on desktop, 'low' on touch devices. Override with ?quality=low or ?quality=high.
+const QUALITY = (() => {
+  const q = new URLSearchParams(location.search).get('quality');
+  if (q === 'low' || q === 'high') return q;
+  return window.matchMedia('(pointer: coarse)').matches ? 'low' : 'high';
+})();
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: QUALITY === 'high', powerPreference: 'high-performance' });
+renderer.setPixelRatio(QUALITY === 'low' ? 1 : Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled = QUALITY === 'high';
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
@@ -83,22 +130,6 @@ function behindYaw(e) {
   return Math.atan2(-f.fx, -f.fz);
 }
 
-/** Nearest free land spot to (x, z): not inside a building footprint (with a small margin). */
-function findFreeSpot(x, z) {
-  const items = colliders.items;
-  const free = (px, pz) =>
-    pointInPoly(px, pz, land) &&
-    !items.some((it) => Math.abs(px - it.cx) < it.hx + 1.5 && Math.abs(pz - it.cz) < it.hz + 1.5);
-  if (free(x, z)) return [x, z];
-  for (let r = 3; r < 600; r += 3) {
-    for (let a = 0; a < 360; a += 12) {
-      const px = x + r * Math.cos((a * Math.PI) / 180);
-      const pz = z + r * Math.sin((a * Math.PI) / 180);
-      if (free(px, pz)) return [px, pz];
-    }
-  }
-  return [x, z];
-}
 
 function nearestPlaceName(x, z) {
   let best = null;
@@ -145,7 +176,7 @@ function exitVehicle(force = false) {
       return;
     }
   }
-  const [sx, sz] = findFreeSpot(side.x, side.z);
+  const [sx, sz] = findFreeSpot(side.x, side.z, land, colliders);
   const gy = groundHeightAt(physics, sx, sz);
   human.body.velocity.set(0, 0, 0);
   human.setInWorld(true, new CANNON.Vec3(sx, gy + Human.RADIUS + 0.4, sz));
@@ -387,19 +418,26 @@ function updateHud() {
 }
 
 // ---------------------------------------------------------------- boot
-/** Spawn points (world XZ). All land spawns avoid building footprints. */
-function spawnPoints() {
-  const [cx, cz] = lonLatToXZ(CITY_CENTER.lon, CITY_CENTER.lat);
-  const human = findFreeSpot(...nearestLandPoint(cx, cz, land));
-  const car = findFreeSpot(...nearestLandPoint(human[0] + 45, human[1] + 30, land));
-  const boat = nearestSeaPoint(cx, cz, land, 30);
-  // Heli (Isa Town) and plane (Riffa) also avoid building footprints so no body starts inside a block.
-  const heli = findFreeSpot(...nearestLandPoint(...lonLatToXZ(50.5, 26.13), land)); // Isa Town area
-  const plane = findFreeSpot(...nearestLandPoint(...lonLatToXZ(50.555, 26.13), land)); // Riffa area
-  return { human, car, boat, heli, plane };
-}
-
 let spawn = null;
+
+// ---------------------------------------------------------------- saved spot
+const SPOT_KEY = 'bahrain3d.spot';
+function loadSavedSpot() {
+  try {
+    const v = JSON.parse(localStorage.getItem(SPOT_KEY));
+    return v && Number.isFinite(v.x) && Number.isFinite(v.z) ? v : null;
+  } catch {
+    return null;
+  }
+}
+function saveSpot(x, z) {
+  try {
+    localStorage.setItem(SPOT_KEY, JSON.stringify({ x: Math.round(x), z: Math.round(z) }));
+  } catch {
+    /* storage can be unavailable (private mode); resuming is optional */
+  }
+}
+let saveTimer = 5;
 
 async function boot() {
   land = getLandPolygon();
@@ -413,11 +451,15 @@ async function boot() {
 
   await new Promise((r) => setTimeout(r, 0)); // let the loading text paint
   world3d = buildWorld(scene, renderer, data);
+  world3d.setDrawDistance(QUALITY === 'low' ? 1500 : 2600);
   physics = createPhysicsWorld();
   addLandCollider(physics, world3d.landGeometry);
   colliders = new BuildingColliders(physics, data.buildings);
 
-  const sp = spawnPoints();
+  const sp = computeSpawns(land, colliders);
+  // Resume the last spot, if it is still on land and clear of buildings.
+  const saved = loadSavedSpot();
+  if (saved && pointInPoly(saved.x, saved.z, land) && !colliders.blocked(saved.x, saved.z)) sp.human = [saved.x, saved.z];
   spawn = sp;
   colliders.update(sp.human[0], sp.human[1], 230);
   human = new Human(physics, scene, sp.human[0], sp.human[1]);
@@ -425,7 +467,7 @@ async function boot() {
   vehicles = [
     new Car(physics, scene, sp.car[0], sp.car[1], 0),
     new Boat(physics, scene, sp.boat[0], sp.boat[1], 0),
-    new Plane(physics, scene, sp.plane[0], sp.plane[1], Math.PI), // flies north over Manama
+    new Plane(physics, scene, sp.plane[0], sp.plane[1], sp.planeHeading), // on the runway at Bahrain International
     new Helicopter(physics, scene, sp.heli[0], sp.heli[1], 0),
   ];
   for (const v of vehicles) v.sync?.(0);
@@ -487,13 +529,24 @@ function frame() {
 
   respawnIfLost();
   updateProximity();
+  saveTimer -= dt;
+  if (saveTimer <= 0) {
+    saveTimer = 5;
+    const p = (state.mode === 'vehicle' ? state.vehicle : human).body.position;
+    saveSpot(p.x, p.z);
+  }
   updateCamera(dt);
   updateHud();
   map.update();
   renderer.render(scene, camera);
 }
 
-boot().catch((err) => {
-  console.error(err);
-  $('loading-text').textContent = `Failed to start: ${err.message}`;
-});
+boot()
+  .then(() => {
+    startupDone = true;
+    $('loading-error').classList.add('hidden'); // boot may finish after the slow-load message appeared
+  })
+  .catch((err) => {
+    console.error(err);
+    showLoadError(err.message);
+  });

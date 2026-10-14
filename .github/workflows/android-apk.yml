@@ -8,9 +8,14 @@ on:
 permissions:
   contents: read
 
+# A newer push cancels the older build still running on the same branch.
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   apk:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned, so the runner image does not change under us
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -67,3 +72,5 @@ jobs:
           name: bahrain-3d-debug-apk
           path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          retention-days: 14
+          # The release APK is never built or signed here. Debug APKs are only for testing.

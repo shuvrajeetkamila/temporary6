@@ -11,6 +11,7 @@ import { getLandPolygon } from './land.js';
 import { lonLatToXZ, pointInPoly } from './geo.js';
 import { PLACES, WATER_Y } from './config.js';
 import { computeSpawns, findFreeSpot } from './spawn.js';
+import { loadModels } from './entities/assets.js';
 
 const FIXED_DT = 1 / 60;
 const IDLE = { x: 0, y: 0, throttle: 0, brake: false, jump: false, run: false };
@@ -367,6 +368,7 @@ function respawnIfLost() {
 }
 
 function updateCamera(dt) {
+  if (debugFreeCamera) return; // debug hook only: lets headless checks frame a shot
   const target = state.mode === 'human' ? human : state.vehicle;
   const p = target.body.position;
   const kind = target.kind;
@@ -438,6 +440,7 @@ function saveSpot(x, z) {
   }
 }
 let saveTimer = 5;
+let debugFreeCamera = false;
 
 async function boot() {
   land = getLandPolygon();
@@ -449,6 +452,8 @@ async function boot() {
       : `Map: procedural city · run “npm run fetch:osm” for real buildings`;
   $('attribution').textContent = data.attribution || '';
 
+  $('loading-text').textContent = 'Loading models…';
+  await loadModels(); // real character and car; falls back to primitives if a file fails
   await new Promise((r) => setTimeout(r, 0)); // let the loading text paint
   world3d = buildWorld(scene, renderer, data);
   world3d.setDrawDistance(QUALITY === 'low' ? 1500 : 2600);
@@ -471,6 +476,22 @@ async function boot() {
     new Helicopter(physics, scene, sp.heli[0], sp.heli[1], 0),
   ];
   for (const v of vehicles) v.sync?.(0);
+  // Test hook for headless checks: ?debug=1 exposes the live game objects. Normal play does not use it.
+  if (new URLSearchParams(location.search).has('debug')) {
+    window.__game = {
+      human: () => human,
+      vehicles: () => vehicles,
+      camera,
+      state,
+      teleportTo,
+      /** Turns the follow camera off and looks from `eye` at `at` (both [x, y, z]). */
+      freeCamera(eye, at) {
+        debugFreeCamera = true;
+        camera.position.set(...eye);
+        camera.lookAt(...at);
+      },
+    };
+  }
 
   map = new GameMap({
     container: $('minimap'),

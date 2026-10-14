@@ -79,12 +79,30 @@ export class Human {
     d = Math.atan2(Math.sin(d), Math.cos(d));
     this.root.rotation.y += d * Math.min(1, dt * 10);
     this.walk += dt * this.moving * 2.4;
+    const anim = this.root.userData.anim;
+    if (anim) {
+      this.playAnimation(anim, dt);
+      return;
+    }
     const { legL, legR, armL, armR } = this.root.userData.limbs;
     const swing = this.grounded ? Math.sin(this.walk) * Math.min(1, this.moving / 4) * 0.7 : 0.3;
     legL.rotation.x = swing;
     legR.rotation.x = -swing;
     armL.rotation.x = -swing * 0.8;
     armR.rotation.x = swing * 0.8;
+  }
+
+  /** Crossfades between idle, walk and run clips of the real character model. */
+  playAnimation(anim, dt) {
+    const want = !this.grounded ? 'idle' : this.moving > 5 ? 'run' : this.moving > 0 ? 'walk' : 'idle';
+    const next = anim.actions[want] ?? anim.actions.idle;
+    if (next && next !== anim.current) {
+      const prev = anim.current;
+      next.reset().fadeIn(0.2).play();
+      if (prev) prev.fadeOut(0.2);
+      anim.current = next;
+    }
+    anim.mixer.update(dt);
   }
 
   /** World-space forward direction on the ground (unit XZ). */

@@ -71,7 +71,7 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 - `src/world/extras.js`: a 3.7 km runway 12/30 at the airport, and about 2,500 instanced palms along quiet roads (residential, service, living street, unclassified; `street` in the procedural city).
 - Sea: custom animated shader with a fresnel term and a sun glint (instead of `THREE.Water`, which needs a normal-map image).
 - Sky gradient, fog, soft shadows that follow the player, and a day/night blend.
-- Models are primitive-built (`src/entities/models.js`). Each builder can later be replaced by a `GLTFLoader` result without touching physics.
+- Models: the character (Xbot, with idle, walk and run clips) and the car (Ferrari body, with physics wheels) are real glTF files, loaded at boot (`src/entities/assets.js`). The boat, plane and helicopter are primitives (`src/entities/models.js`). Physics does not depend on the models.
 
 ### Step 4 · UI and map
 - `src/map.js`: one element (`#minimap`) animates with CSS from a circular minimap (top-right, follows the player, north up) to a full-screen map.
@@ -109,11 +109,14 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
   Building meshes are chunked and distance-culled, but there is no level-of-detail yet. Procedural mode is the safe default for low-end devices.
 - Building colliders are axis-aligned boxes around each footprint, so rotated walls are approximate.
 - The jet is an arcade model (a 2 m collider with lift applied from the code, not a wing simulation).
-- **GLB/GLTF model loading is deferred (next step).** All vehicles and people are primitive models and textures are procedural.
-  Each builder in `src/entities/models.js` can later be replaced by a `GLTFLoader` result without touching physics.
-- Browser check: the latest changes (runway, palms, normal map, quality, saved spot, error panel) were **not** run in a browser.
-  The sandbox could not download a Chromium binary. They were checked with `npm test`, a Vite build, and a Node check of the palm and runway code.
-  Please check them in the live preview. The runway heading (runway 12, about 120°) is from memory and has not been checked against survey data.
+- **Real models: the human (Xbot) and the car (Ferrari body) are glTF models.** The boat, plane and helicopter are still primitives,
+  because the three.js package has no suitable models for them. Each builder in `src/entities/models.js` falls back to its primitive model
+  if its file fails to load. Model sources and licences are in `ASSETS.md`. **The Ferrari licence needs checking before publishing.**
+- Browser check: headless Chromium (WebGL 2, SwiftShader) loads the game with no page errors. It was checked for boot,
+  the spawn view, the car and character models, and the sea. Checked by eye from screenshots, not by an automated test.
+  Not yet checked: real-OSM rendering in a browser (the sandbox cannot reach HDX), the walk and run animations while moving,
+  driving the car, and a real phone. The runway heading (runway 12, about 120°) is from memory and has not been checked against survey data.
+- Debug hook for browser checks: `?debug=1` exposes `window.__game` (the live objects and a free camera). Normal play does not use it.
 - Dev-only audit: `npm audit` reports 3 moderate `uuid` advisories inside `@capacitor/cli` (build tool, not in the APK). The suggested fix is a breaking downgrade, so it was not applied.
 - The APK is not built in the sandbox (no JDK or Android SDK there). Build it in Android Studio as described below.
 
@@ -127,7 +130,9 @@ src/world/textures.js      canvas textures (windows, asphalt, sand, asphalt norm
 src/world/extras.js        airport runway, palm trees
 src/spawn.js               spawn points on land, clear of buildings; airport spawn for the jet
 src/entities/vehicles.js   Human, Car, Boat, Plane, Helicopter controllers
-src/entities/models.js     primitive models
+src/entities/models.js     vehicle and character builders (real glTF models with primitive fallbacks)
+src/entities/assets.js     glTF/Draco loading, model fitting to real sizes
+public/models, public/draco, public/textures   bundled third-party assets (see ASSETS.md)
 src/physics.js             cannon-es world, collider streaming, ground raycasts
 src/map.js                 minimap / full map, pan-zoom, tap-to-teleport
 src/input.js               keyboard + touch → one input object

@@ -35,6 +35,7 @@ const waterFS = /* glsl */ `
   uniform vec3 uSunDir;
   uniform vec3 uSunColor;
   uniform float uNight;
+  uniform sampler2D uNormals; // three.js water normal map (real texture), scrolled in two directions
   varying vec3 vWorldPos;
   #include <fog_pars_fragment>
 
@@ -50,6 +51,9 @@ const waterFS = /* glsl */ `
     float hx = wave(p + vec2(0.8, 0.0));
     float hz = wave(p + vec2(0.0, 0.8));
     vec3 n = normalize(vec3((h - hx) * 0.12, 1.0, (h - hz) * 0.12));
+    vec3 n1 = texture2D(uNormals, p * 0.012 + vec2(uTime * 0.012, uTime * 0.008)).xyz * 2.0 - 1.0;
+    vec3 n2 = texture2D(uNormals, p * 0.02 + vec2(-uTime * 0.01, uTime * 0.014)).xyz * 2.0 - 1.0;
+    n = normalize(n + vec3(n1.x + n2.x, 0.0, n1.y + n2.y) * 0.22);
     vec3 V = normalize(cameraPosition - vWorldPos);
     float fres = pow(1.0 - max(dot(n, V), 0.0), 3.0);
     vec3 base = mix(uShallow, uDeep, smoothstep(0.0, 1.0, 0.5 + 0.5 * sin(p.x * 0.0004 + p.y * 0.0003)));
@@ -264,6 +268,9 @@ export function buildWorld(scene, renderer, data) {
   }
 
   // ---- sea ----------------------------------------------------------------
+  // Until the texture arrives, a flat normal map (0.5, 0.5, 1) keeps the sea looking as before.
+  const waterNormalPlaceholder = new THREE.DataTexture(new Uint8Array([128, 128, 255, 255]), 1, 1);
+  waterNormalPlaceholder.needsUpdate = true;
   const waterUniforms = {
     uTime: { value: 0 },
     uDeep: { value: new THREE.Color(LIGHTING.day.water[0]) },
@@ -271,6 +278,7 @@ export function buildWorld(scene, renderer, data) {
     uSunDir: { value: sun.position.clone().normalize() },
     uSunColor: { value: new THREE.Color(LIGHTING.day.sun) },
     uNight: { value: 0 },
+    uNormals: { value: waterNormalPlaceholder },
     ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog),
   };
   const waterMat = new THREE.ShaderMaterial({
@@ -278,6 +286,12 @@ export function buildWorld(scene, renderer, data) {
     vertexShader: waterVS,
     fragmentShader: waterFS,
     fog: true,
+  });
+  new THREE.TextureLoader().load('textures/waternormals.jpg', (tex) => {
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.colorSpace = THREE.NoColorSpace; // normal data is linear
+    tex.anisotropy = 4;
+    waterUniforms.uNormals.value = tex;
   });
   const water = new THREE.Mesh(new THREE.PlaneGeometry(60000, 60000), waterMat);
   water.rotation.x = -Math.PI / 2;

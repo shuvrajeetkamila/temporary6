@@ -97,10 +97,17 @@ export class BuildingColliders {
 
   /** True if (x, z) is inside a building footprint plus a small clearance. */
   blocked(x, z, pad = BLOCK_PAD_M) {
-    const list = this.grid.get(Math.floor(x / GRID_CELL_M) * 100003 + Math.floor(z / GRID_CELL_M));
-    if (!list) return false;
-    for (const it of list) {
-      if (Math.abs(x - it.cx) < it.hx + pad && Math.abs(z - it.cz) < it.hz + pad) return true;
+    // Check every grid cell the padded point touches, so buildings just across a cell edge are seen too.
+    const x0 = Math.floor((x - pad) / GRID_CELL_M), x1 = Math.floor((x + pad) / GRID_CELL_M);
+    const z0 = Math.floor((z - pad) / GRID_CELL_M), z1 = Math.floor((z + pad) / GRID_CELL_M);
+    for (let ix = x0; ix <= x1; ix++) {
+      for (let iz = z0; iz <= z1; iz++) {
+        const list = this.grid.get(ix * 100003 + iz);
+        if (!list) continue;
+        for (const it of list) {
+          if (Math.abs(x - it.cx) < it.hx + pad && Math.abs(z - it.cz) < it.hz + pad) return true;
+        }
+      }
     }
     return false;
   }

@@ -1,6 +1,14 @@
 // Primitive-built models (no external assets). Convention: nose points along +Z, origin at the
 // physics body centre. Swap any builder for a GLTFLoader result later without touching physics.
 import * as THREE from 'three';
+import { gltfFor, normaliseToOrigin, enableShadows } from './assets.js';
+
+// Real-model settings. Tuned by eye in the headless browser check (see README).
+export const HUMAN_HEIGHT = 1.8; // metres
+export const HUMAN_FACE_OFFSET = 0; // extra yaw so the model's nose points along +Z
+export const CAR_FACE_OFFSET = Math.PI; // the Ferrari nose is -Z in its file; turn it to +Z like the primitive model (the body adds another π)
+export const CAR_LENGTH = 4.2; // matches the physics box (2 × 2.1 m)
+export const CAR_BOTTOM_Y = -0.58; // chassis underside relative to the body centre (tyres reach about -0.76, so the sill sits ~0.15 m above ground)
 
 const std = (color, opts = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0.1, ...opts });
 const box = (w, h, d, mat) => {
@@ -22,7 +30,36 @@ function extrudeXZ(points, depth) {
   return g;
 }
 
+function buildRealHuman() {
+  const g = gltfFor('human');
+  if (!g) return null;
+  const root = new THREE.Group();
+  // The player is the only human, so the loaded scene is used directly. (SkeletonUtils.clone gives a different
+  // skeleton scale for this rig, so the height fit would be wrong.)
+  const model = g.scene;
+  model.rotation.y = HUMAN_FACE_OFFSET;
+  root.add(model);
+  const size = normaliseToOrigin(model);
+  model.scale.setScalar(HUMAN_HEIGHT / size.y);
+  normaliseToOrigin(model);
+  enableShadows(root);
+
+  const mixer = new THREE.AnimationMixer(model);
+  const clip = (name) => THREE.AnimationClip.findByName(g.animations, name);
+  const actions = {};
+  for (const name of ['idle', 'walk', 'run']) {
+    const c = clip(name);
+    if (c) actions[name] = mixer.clipAction(c);
+  }
+  root.userData.anim = { mixer, actions, current: null };
+  return root;
+}
+
 export function buildHuman() {
+  return buildRealHuman() ?? buildPrimitiveHuman();
+}
+
+function buildPrimitiveHuman() {
   const root = new THREE.Group();
   const thobe = std(0xf4f1ea, { roughness: 0.8 });
   const skin = std(0x8d5a3b, { roughness: 0.7 });
@@ -41,7 +78,32 @@ export function buildHuman() {
   return root;
 }
 
+// Wheel meshes in the Ferrari file. The physics wheels (buildWheel) are used instead, so these are hidden.
+const FERRARI_WHEEL_NAME = /wheel|tire|tyre|rim_|nuts|brake|centre/i;
+
+function buildRealCar() {
+  const g = gltfFor('car');
+  if (!g) return null;
+  const root = new THREE.Group();
+  const model = g.scene.clone(true);
+  model.rotation.y = CAR_FACE_OFFSET;
+  root.add(model);
+  const size = normaliseToOrigin(model);
+  model.scale.setScalar(CAR_LENGTH / Math.max(size.x, size.z));
+  normaliseToOrigin(model);
+  model.position.y += CAR_BOTTOM_Y;
+  model.traverse((o) => {
+    if (FERRARI_WHEEL_NAME.test(o.name)) o.visible = false;
+  });
+  enableShadows(root);
+  return root;
+}
+
 export function buildCar(color = 0xc0392b) {
+  return buildRealCar() ?? buildPrimitiveCar(color);
+}
+
+function buildPrimitiveCar(color) {
   const root = new THREE.Group();
   const paint = std(color, { roughness: 0.35, metalness: 0.3 });
   const glass = std(0x1b2430, { roughness: 0.1, metalness: 0.2 });

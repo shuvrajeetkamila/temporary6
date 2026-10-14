@@ -277,10 +277,12 @@ function bindUi() {
 function bindJoystick() {
   const base = $('joystick');
   const stick = $('stick');
-  const R = 56;
   let active = false;
+  // Travel range follows the base size, so the knob stays inside the ring on small phones.
+  const range = (r) => Math.max(20, r.width / 2 - 28);
   const move = (e) => {
     const r = base.getBoundingClientRect();
+    const R = range(r);
     const cx = r.left + r.width / 2;
     const cy = r.top + r.height / 2;
     let dx = e.clientX - cx;
@@ -479,6 +481,7 @@ async function boot() {
   // Test hook for headless checks: ?debug=1 exposes the live game objects. Normal play does not use it.
   if (new URLSearchParams(location.search).has('debug')) {
     window.__game = {
+      renderInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures }),
       human: () => human,
       vehicles: () => vehicles,
       camera,

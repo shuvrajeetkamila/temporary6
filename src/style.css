@@ -86,6 +86,13 @@ button:active { transform: scale(.97); }
 #touch-buttons { position: absolute; right: 16px; bottom: 24px; display: grid; grid-template-columns: repeat(3, auto); gap: 8px; pointer-events: auto; }
 #touch-buttons button { min-width: 64px; min-height: 52px; background: rgba(0,0,0,.35); font-size: 14px; }
 
+/* narrow phones: smaller stick and buttons so they do not overlap */
+@media (max-width: 480px) {
+  #joystick { left: 12px; bottom: 20px; width: 116px; height: 116px; }
+  #touch-buttons { right: 10px; bottom: 16px; gap: 6px; }
+  #touch-buttons button { min-width: 50px; min-height: 46px; font-size: 13px; white-space: nowrap; padding-left: 8px; padding-right: 8px; }
+}
+
 /* help */
 #help {
   position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 40;

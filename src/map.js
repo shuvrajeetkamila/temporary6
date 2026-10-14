@@ -20,6 +20,35 @@ const COLORS = {
   heli: '#6ee37a',
 };
 
+const PATH_CHUNK = 1000;
+
+/** Splits `items` into Path2D objects of PATH_CHUNK items each; `addItem(path, item)` draws one item. */
+function chunkPaths(items, addItem) {
+  const paths = [];
+  let p = null;
+  for (let i = 0; i < items.length; i++) {
+    if (i % PATH_CHUNK === 0) paths.push((p = new Path2D()));
+    addItem(p, items[i]);
+  }
+  return paths;
+}
+
+/** Road segments as thin quads. Each segment is [ax, az, bx, bz, halfWidth]. */
+function segmentPaths(segs) {
+  return chunkPaths(segs, (p, [ax, az, bx, bz, hw]) => {
+    const dx = bx - ax;
+    const dz = bz - az;
+    const len = Math.hypot(dx, dz) || 1;
+    const nx = (-dz / len) * hw;
+    const nz = (dx / len) * hw;
+    p.moveTo(ax + nx, az + nz);
+    p.lineTo(bx + nx, bz + nz);
+    p.lineTo(bx - nx, bz - nz);
+    p.lineTo(ax - nx, az - nz);
+    p.closePath();
+  });
+}
+
 export class GameMap {
   /**
    * @param {object} o
@@ -54,38 +83,26 @@ export class GameMap {
     land.closePath();
     this.landPath = land;
 
-    const roads = new Path2D();
-    const arterials = new Path2D();
+    // Chromium builds a single Path2D with many sub-paths very slowly (60k shapes took minutes),
+    // so roads and buildings are split into chunks of about 1000 shapes each.
+    const streetSegs = [];
+    const arterialSegs = [];
     for (const r of this.data.roads) {
       const hw = (r.w ?? ROAD_WIDTH[r.kind] ?? 8) / 2;
-      const target = r.kind === 'street' ? roads : arterials;
+      const list = r.kind === 'street' ? streetSegs : arterialSegs;
       for (let i = 0; i < r.pts.length - 1; i++) {
-        const [ax, az] = r.pts[i];
-        const [bx, bz] = r.pts[i + 1];
-        const dx = bx - ax;
-        const dz = bz - az;
-        const len = Math.hypot(dx, dz) || 1;
-        const nx = (-dz / len) * hw;
-        const nz = (dx / len) * hw;
-        target.moveTo(ax + nx, az + nz);
-        target.lineTo(bx + nx, bz + nz);
-        target.lineTo(bx - nx, bz - nz);
-        target.lineTo(ax - nx, az - nz);
-        target.closePath();
+        list.push([r.pts[i][0], r.pts[i][1], r.pts[i + 1][0], r.pts[i + 1][1], hw]);
       }
     }
-    this.roadPath = roads;
-    this.arterialPath = arterials;
+    this.roadPaths = segmentPaths(streetSegs);
+    this.arterialPaths = segmentPaths(arterialSegs);
 
-    const bld = new Path2D();
-    for (const b of this.data.buildings) {
-      const p = b.pts;
-      if (!p || p.length < 3) continue;
-      bld.moveTo(p[0][0], p[0][1]);
-      for (let i = 1; i < p.length; i++) bld.lineTo(p[i][0], p[i][1]);
-      bld.closePath();
-    }
-    this.buildingPath = bld;
+    const buildings = this.data.buildings.filter((b) => b.pts && b.pts.length >= 3);
+    this.buildingPaths = chunkPaths(buildings, (p, b) => {
+      p.moveTo(b.pts[0][0], b.pts[0][1]);
+      for (let i = 1; i < b.pts.length; i++) p.lineTo(b.pts[i][0], b.pts[i][1]);
+      p.closePath();
+    });
     this.placeXZ = PLACES.map((p) => ({ name: p.name, ...this.xz(p) }));
   }
 
@@ -281,12 +298,12 @@ export class GameMap {
     ctx.fillStyle = COLORS.land;
     ctx.fill(this.landPath);
     ctx.fillStyle = COLORS.arterial;
-    ctx.fill(this.arterialPath);
+    for (const p of this.arterialPaths) ctx.fill(p);
     ctx.fillStyle = COLORS.street;
-    ctx.fill(this.roadPath);
+    for (const p of this.roadPaths) ctx.fill(p);
     if (s > 0.02) {
       ctx.fillStyle = COLORS.building;
-      ctx.fill(this.buildingPath);
+      for (const p of this.buildingPaths) ctx.fill(p);
     }
 
     // overlays are drawn in CSS pixels

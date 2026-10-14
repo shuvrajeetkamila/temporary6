@@ -152,24 +152,36 @@ export function buildWorld(scene, renderer, data) {
   const roofMat = new THREE.MeshStandardMaterial({ color: 0x8f8a80, roughness: 0.95 });
 
   // ExtrudeGeometry is non-indexed and always emits group 0 = caps (roofs) then group 1 = sides (walls).
-  // Split each building into a roof part and a wall part, then merge each set into one draw call.
-  const roofParts = [];
-  const wallParts = [];
+  // Buildings are merged into square chunks (about 1.5 km). Each chunk is one roof mesh and one wall mesh,
+  // so the renderer can skip chunks outside the camera view. A single merged mesh would draw the whole city every frame.
+  const CHUNK_M = 1500;
+  const chunks = new Map();
   for (const b of data.buildings) {
     if (!b.pts || b.pts.length < 3) continue;
+    let cx = 0;
+    let cz = 0;
+    for (const [x, z] of b.pts) {
+      cx += x;
+      cz += z;
+    }
+    cx /= b.pts.length;
+    cz /= b.pts.length;
+    const key = `${Math.floor(cx / CHUNK_M)},${Math.floor(cz / CHUNK_M)}`;
+    let chunk = chunks.get(key);
+    if (!chunk) chunks.set(key, (chunk = { roof: [], wall: [] }));
     const shape = new THREE.Shape(b.pts.map(([x, z]) => new THREE.Vector2(x, -z)));
     const g = new THREE.ExtrudeGeometry(shape, { depth: b.h, bevelEnabled: false, steps: 1, curveSegments: 1 });
     g.rotateX(-Math.PI / 2);
     const [caps, sides] = g.groups;
-    roofParts.push(sliceGeometry(g, caps.start, caps.count));
-    wallParts.push(sliceGeometry(g, sides.start, sides.count));
+    chunk.roof.push(sliceGeometry(g, caps.start, caps.count));
+    chunk.wall.push(sliceGeometry(g, sides.start, sides.count));
     g.dispose();
   }
-  if (roofParts.length) {
-    const roofGeo = mergeGeometries(roofParts, false);
-    const wallGeo = mergeGeometries(wallParts, false);
-    roofParts.forEach((g) => g.dispose());
-    wallParts.forEach((g) => g.dispose());
+  for (const chunk of chunks.values()) {
+    const roofGeo = mergeGeometries(chunk.roof, false);
+    const wallGeo = mergeGeometries(chunk.wall, false);
+    chunk.roof.forEach((g) => g.dispose());
+    chunk.wall.forEach((g) => g.dispose());
     const roofMesh = new THREE.Mesh(roofGeo, roofMat);
     const wallMesh = new THREE.Mesh(wallGeo, wallMat);
     for (const m of [roofMesh, wallMesh]) {

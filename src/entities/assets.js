@@ -3,11 +3,17 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 const MODELS = {
   human: 'models/Xbot.glb', // Mixamo character with idle, walk and run clips
   car: 'models/ferrari.glb', // Ferrari body; the physics wheels are kept
+  boat: 'models/zefiro_6.5.glb', // ZEFIRO motorboat, CC BY 4.0 (angelo raffaele catalano, Sketchfab)
+  plane: 'models/A320_nologo.glb', // Airbus A320, logo-free, CC BY 4.0 (amvlab)
 };
+
+/** Sky image used for image-based lighting (reflections and ambient light on the models). CC0, Poly Haven. */
+export const ENV_FILES = { high: 'env/sky_clear_4k.hdr', low: 'env/sky_clear_1k.hdr' };
 
 const loaded = {};
 
@@ -31,6 +37,24 @@ export async function loadModels({ timeoutMs = 20000 } = {}) {
     }),
   );
   return Object.keys(loaded);
+}
+
+/**
+ * Loads an equirectangular HDR sky and turns it into a prefiltered environment map for scene.environment.
+ * Returns null on failure, so the scene keeps its plain lighting.
+ */
+export async function loadEnvironment(renderer, file, { timeoutMs = 45000 } = {}) {
+  try {
+    const hdr = await withTimeout(new RGBELoader().loadAsync(file), timeoutMs, file);
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const env = pmrem.fromEquirectangular(hdr).texture;
+    hdr.dispose();
+    pmrem.dispose();
+    return env;
+  } catch (e) {
+    console.warn('environment map not loaded, using plain lighting:', e?.message ?? e);
+    return null;
+  }
 }
 
 /** Returns the loaded glTF for a key ('human' | 'car'), or null when it is not available. */

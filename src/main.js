@@ -11,11 +11,11 @@ import { getLandPolygon } from './land.js';
 import { lonLatToXZ, pointInPoly } from './geo.js';
 import { PLACES, WATER_Y } from './config.js';
 import { computeSpawns, findFreeSpot } from './spawn.js';
-import { loadModels } from './entities/assets.js';
+import { loadModels, loadEnvironment, ENV_FILES } from './entities/assets.js';
 
 const FIXED_DT = 1 / 60;
 const IDLE = { x: 0, y: 0, throttle: 0, brake: false, jump: false, run: false };
-const CAM_DISTANCE = { human: 6, car: 9, boat: 13, plane: 26, heli: 17 };
+const CAM_DISTANCE = { human: 6, car: 9, boat: 13, plane: 75, heli: 17 }; // the A320 is 37.6 m long, so the plane camera stands further back
 const $ = (id) => document.getElementById(id);
 
 // ---------------------------------------------------------------- startup errors
@@ -213,6 +213,8 @@ function bindUi() {
   $('btn-night').addEventListener('click', toggleNight);
   $('btn-help').addEventListener('click', () => $('help').classList.toggle('hidden'));
   $('help-close').addEventListener('click', () => $('help').classList.add('hidden'));
+  $('btn-credits').addEventListener('click', () => $('credits').classList.toggle('hidden'));
+  $('credits-close').addEventListener('click', () => $('credits').classList.add('hidden'));
 
   window.addEventListener('keydown', (e) => {
     if (e.code === 'KeyH') $('help').classList.toggle('hidden');
@@ -452,10 +454,13 @@ async function boot() {
     data.source === 'osm'
       ? `Map: OpenStreetMap extract (${data.buildings.length.toLocaleString()} buildings)`
       : `Map: procedural city · run “npm run fetch:osm” for real buildings`;
-  $('attribution').textContent = data.attribution || '';
+  $('attribution').textContent = [data.attribution, 'Boat & aircraft CC BY 4.0 · sky CC0 · see Credits'].filter(Boolean).join(' · ');
 
   $('loading-text').textContent = 'Loading models…';
-  await loadModels(); // real character and car; falls back to primitives if a file fails
+  // Real models (character, car, boat, aircraft) and the sky image for lighting load in parallel.
+  // A failed file keeps its primitive model, or plain lighting for the sky.
+  const [, env] = await Promise.all([loadModels(), loadEnvironment(renderer, ENV_FILES[QUALITY])]);
+  scene.environment = env;
   await new Promise((r) => setTimeout(r, 0)); // let the loading text paint
   world3d = buildWorld(scene, renderer, data);
   world3d.setDrawDistance(QUALITY === 'low' ? 1500 : 2600);

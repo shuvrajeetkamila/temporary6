@@ -91,18 +91,19 @@ button:active { transform: scale(.97); }
   #joystick { left: 12px; bottom: 20px; width: 116px; height: 116px; }
   #touch-buttons { right: 10px; bottom: 16px; gap: 6px; }
   #touch-buttons button { min-width: 50px; min-height: 46px; font-size: 13px; white-space: nowrap; padding-left: 8px; padding-right: 8px; }
+  #btn-exit { bottom: 200px; } /* sits above the touch buttons */
 }
 
 /* help */
-#help {
+#help, #credits {
   position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 40;
   width: min(440px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto;
 }
-#help h2 { margin: 0 0 8px; font-size: 18px; }
-#help table { border-collapse: collapse; width: 100%; font-size: 14px; }
-#help td { padding: 5px 4px; border-top: 1px solid rgba(255,255,255,.1); vertical-align: top; }
-#help td:first-child { color: #d9e3ec; width: 44%; }
-#help .close { position: absolute; top: 8px; right: 8px; padding: 4px 9px; }
+#help h2, #credits h2 { margin: 0 0 8px; font-size: 18px; }
+#help table, #credits table { border-collapse: collapse; width: 100%; font-size: 14px; }
+#help td, #credits td { padding: 5px 4px; border-top: 1px solid rgba(255,255,255,.1); vertical-align: top; }
+#help td:first-child, #credits td:first-child { color: #d9e3ec; width: 44%; }
+#help .close, #credits .close { position: absolute; top: 8px; right: 8px; padding: 4px 9px; }
 
 /* loading */
 #loading {
@@ -124,6 +125,7 @@ button:active { transform: scale(.97); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 #attribution { position: fixed; right: 8px; bottom: 4px; z-index: 5; font-size: 11px; pointer-events: none; }
+#credits p { font-size: 12px; }
 
 @media (max-width: 600px) {
   #hud { width: calc(100vw - 210px); }

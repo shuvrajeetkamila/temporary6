@@ -7,11 +7,11 @@ import { lonLatToXZ } from '../geo.js';
 
 const LIGHTING = {
   day: {
-    top: 0x2f78c4, horizon: 0xcfe6f5, sun: 0xfff1d0, sunI: 2.8, hemi: 1.0, emissive: 0,
+    top: 0x2f78c4, horizon: 0xcfe6f5, sun: 0xfff1d0, sunI: 2.8, hemi: 1.0, emissive: 0, env: 0.9,
     water: [0x0b5d74, 0x1d8fa3],
   },
   night: {
-    top: 0x02040c, horizon: 0x13213f, sun: 0x7d93cc, sunI: 0.22, hemi: 0.3, emissive: 1.25,
+    top: 0x02040c, horizon: 0x13213f, sun: 0x7d93cc, sunI: 0.22, hemi: 0.3, emissive: 1.25, env: 0.12,
     water: [0x031c2b, 0x0a3a4d],
   },
 };
@@ -316,6 +316,7 @@ export function buildWorld(scene, renderer, data) {
     scene.fog.color.copy(tmpA);
     sun.intensity = a.sunI + (b.sunI - a.sunI) * t;
     hemi.intensity = a.hemi + (b.hemi - a.hemi) * t;
+    scene.environmentIntensity = a.env + (b.env - a.env) * t; // image-based light, only when the sky map loaded
     wallMat.emissiveIntensity = a.emissive + (b.emissive - a.emissive) * t;
     waterUniforms.uNight.value = t;
     waterUniforms.uDeep.value.set(a.water[0]).lerp(tmpB.set(b.water[0]), t);

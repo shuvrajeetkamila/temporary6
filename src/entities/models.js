@@ -130,7 +130,31 @@ export function buildWheel() {
   return { root, spin };
 }
 
+// Boat: ZEFIRO model, scaled to 6.5 m. Its hull bottom sits 0.5 m under the water line (the primitive hull reaches 0.45 m).
+export const BOAT_LENGTH = 6.5;
+export const BOAT_FACE_OFFSET = 0; // checked in the headless screenshot; the bow points along +Z
+export const BOAT_DRAFT = 0.5;
+
+function buildRealBoat() {
+  const g = gltfFor('boat');
+  if (!g) return null;
+  const root = new THREE.Group();
+  const model = g.scene.clone(true);
+  model.rotation.y = BOAT_FACE_OFFSET;
+  root.add(model);
+  const size = normaliseToOrigin(model);
+  model.scale.setScalar(BOAT_LENGTH / Math.max(size.x, size.z));
+  normaliseToOrigin(model);
+  model.position.y -= BOAT_DRAFT;
+  enableShadows(root);
+  return root;
+}
+
 export function buildBoat(color = 0xf5f5f5) {
+  return buildRealBoat() ?? buildPrimitiveBoat(color);
+}
+
+function buildPrimitiveBoat(color) {
   const root = new THREE.Group();
   const hullPts = [[-1.1, -3.1], [1.1, -3.1], [1.1, 1.8], [0, 3.4], [-1.1, 1.8]];
   const hull = new THREE.Mesh(extrudeXZ(hullPts, 0.9), std(color, { roughness: 0.4 }));
@@ -143,7 +167,30 @@ export function buildBoat(color = 0xf5f5f5) {
   return root;
 }
 
+// Airliner: Airbus A320 at real scale (37.6 m long, 35.8 m span). Its file has the nose on +X, so it is turned to +Z.
+export const PLANE_LENGTH = 37.6;
+export const PLANE_FACE_OFFSET = -Math.PI / 2;
+
+function buildRealPlane() {
+  const g = gltfFor('plane');
+  if (!g) return null;
+  const root = new THREE.Group();
+  const model = g.scene.clone(true);
+  model.rotation.y = PLANE_FACE_OFFSET;
+  root.add(model);
+  const size = normaliseToOrigin(model);
+  model.scale.setScalar(PLANE_LENGTH / Math.max(size.x, size.z));
+  normaliseToOrigin(model);
+  model.position.y -= size.y * model.scale.y * 0.5; // the body centre is the middle of the aircraft
+  enableShadows(root);
+  return root;
+}
+
 export function buildPlane() {
+  return buildRealPlane() ?? buildPrimitivePlane();
+}
+
+function buildPrimitivePlane() {
   const root = new THREE.Group();
   const body = std(0xe8ecf1, { roughness: 0.4, metalness: 0.2 });
   const accent = std(0x1f6fb2, { roughness: 0.5 });

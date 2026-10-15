@@ -95,15 +95,15 @@ button:active { transform: scale(.97); }
 }
 
 /* help */
-#help, #credits {
+#help, #credits, #garage {
   position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 40;
   width: min(440px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto;
 }
-#help h2, #credits h2 { margin: 0 0 8px; font-size: 18px; }
+#help h2, #credits h2, #garage h2 { margin: 0 0 8px; font-size: 18px; }
 #help table, #credits table { border-collapse: collapse; width: 100%; font-size: 14px; }
 #help td, #credits td { padding: 5px 4px; border-top: 1px solid rgba(255,255,255,.1); vertical-align: top; }
 #help td:first-child, #credits td:first-child { color: #d9e3ec; width: 44%; }
-#help .close, #credits .close { position: absolute; top: 8px; right: 8px; padding: 4px 9px; }
+#help .close, #credits .close, #garage .close { position: absolute; top: 8px; right: 8px; padding: 4px 9px; }
 
 /* loading */
 #loading {
@@ -131,3 +131,12 @@ button:active { transform: scale(.97); }
   #hud { width: calc(100vw - 210px); }
   #minimap { width: 150px; height: 150px; }
 }
+
+/* vehicles list (summon / send home) */
+#garage p { font-size: 13px; margin: 6px 0; }
+.garage-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; border-top: 1px solid rgba(255,255,255,.1); }
+.garage-name { font-size: 14px; min-width: 0; }
+.garage-name .muted { display: block; font-size: 12px; }
+.garage-btns { display: flex; gap: 6px; }
+.garage-btns button { min-height: 40px; padding: 6px 12px; }
+.garage-btns button:disabled { opacity: .4; }

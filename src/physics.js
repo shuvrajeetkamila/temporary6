@@ -9,6 +9,7 @@ export const GROUP_DYNAMIC = 2;
 export const MATERIALS = {
   ground: new CANNON.Material('ground'),
   human: new CANNON.Material('human'),
+  wheels: new CANNON.Material('wheels'), // the jet's undercarriage: rolls on tarmac
 };
 
 export function createPhysicsWorld() {
@@ -21,6 +22,9 @@ export function createPhysicsWorld() {
   world.addContactMaterial(
     new CANNON.ContactMaterial(MATERIALS.human, MATERIALS.ground, { friction: 0, restitution: 0 }),
   );
+  world.addContactMaterial(
+    new CANNON.ContactMaterial(MATERIALS.wheels, MATERIALS.ground, { friction: 0, restitution: 0 }),
+  );
   return world;
 }
 
@@ -30,6 +34,25 @@ export function addDynamicBody(world, options) {
   body.collisionFilterGroup = GROUP_DYNAMIC;
   body.collisionFilterMask = -1;
   world.addBody(body);
+  return body;
+}
+
+/**
+ * Gives a dynamic body a box-shaped hull built from spheres at its eight corners.
+ * cannon-es 0.20 lets boxes fall through the island's triangle mesh (spheres collide correctly),
+ * so the aircraft and boat use this instead of a Box. The lowest sphere touches the same plane
+ * as the box bottom, and the body's collision size stays the same.
+ */
+export function addHullShapes(body, half) {
+  const r = Math.min(half.x, half.y, half.z) * 0.9;
+  const ix = half.x - r;
+  const iy = half.y - r;
+  const iz = half.z - r;
+  for (const sx of [-1, 1]) {
+    for (const sy of [-1, 1]) {
+      for (const sz of [-1, 1]) body.addShape(new CANNON.Sphere(r), new CANNON.Vec3(sx * ix, sy * iy, sz * iz));
+    }
+  }
   return body;
 }
 

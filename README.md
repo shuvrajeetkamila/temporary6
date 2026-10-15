@@ -36,6 +36,8 @@ If the world fails to load, an error panel offers **Retry** and **Procedural cit
 | Enter / exit vehicle (within 2 m) | E | E button or the "Enter" prompt |
 | Look around / zoom | drag the screen / mouse wheel | drag the screen (zoom: wheel on desktop) |
 | Map · teleport | M, then tap a point on land | tap the minimap |
+| Vehicles list (summon / send home) | V, or the **Vehicles** button | **Vehicles** button |
+| Summon car · boat · jet · helicopter | 1 · 2 · 3 · 4 (on foot) | Vehicles list |
 | Day / night | N | — |
 
 Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or yaw (helicopter)**.

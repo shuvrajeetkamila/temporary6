@@ -85,3 +85,111 @@ test('human stands on the ground and walks at ~4.2 m/s', () => {
   const dz = hu.body.position.z - z0;
   assert.ok(dz < -7 && dz > -9, `walk dz=${dz}`);
 });
+
+// ---- car tuning (see CAR in src/entities/vehicles.js; numbers measured with .lab scripts) ----
+test('car reaches 100 km/h in under 6 s and tops out above 200 km/h', () => {
+  const w = flatWorld();
+  const car = new Car(w, scene, 0, 0, 0);
+  let t = 0;
+  let t100 = null;
+  for (let i = 0; i < 60 * 40; i++) {
+    car.update(DT, { ...IDLE, y: 1 });
+    w.step(DT);
+    t += DT;
+    if (t100 === null && car.speedKmh >= 100) t100 = t;
+  }
+  assert.ok(t100 !== null && t100 < 6, `0-100 km/h took ${t100}`);
+  assert.ok(car.speedKmh > 200, `top speed ${car.speedKmh} km/h`);
+});
+
+test('car stops from 100 km/h in under 45 m with the service brake (S)', () => {
+  const w = flatWorld();
+  const car = new Car(w, scene, 0, 0, 0);
+  car.body.velocity.set(0, 0, -27.8);
+  steps(w, 60, () => car.update(DT, IDLE));
+  const z0 = car.body.position.z;
+  for (let i = 0; i < 60 * 20 && car.speedKmh > 0.5; i++) {
+    car.update(DT, { ...IDLE, y: -1 });
+    w.step(DT);
+  }
+  const dist = z0 - car.body.position.z;
+  assert.ok(dist > 25 && dist < 45, `stopping distance ${dist.toFixed(1)} m`);
+});
+
+test('handbrake lets the rear slide: more sideways speed than without it', () => {
+  const run = (brake) => {
+    const w = flatWorld();
+    const car = new Car(w, scene, 0, 0, 0);
+    car.body.velocity.set(0, 0, -16.7);
+    steps(w, 30, () => car.update(DT, IDLE));
+    let maxLat = 0;
+    for (let i = 0; i < 120; i++) {
+      car.update(DT, { ...IDLE, y: 0.2, x: 1, brake });
+      w.step(DT);
+      const right = car.body.vectorToWorldFrame(new CANNON.Vec3(1, 0, 0), new CANNON.Vec3());
+      maxLat = Math.max(maxLat, Math.abs(car.body.velocity.dot(right)));
+    }
+    return maxLat;
+  };
+  const grip = run(false);
+  const slide = run(true);
+  assert.ok(slide > grip + 0.1, `handbrake lateral ${slide.toFixed(2)} vs ${grip.toFixed(2)} m/s`);
+});
+
+test('car steering stays within about 1 g at 90 km/h (no sideways skating)', () => {
+  const w = flatWorld();
+  const car = new Car(w, scene, 0, 0, 0);
+  car.body.velocity.set(0, 0, -25);
+  let minSpeed = Infinity;
+  let maxRoll = 0;
+  for (let i = 0; i < 60 * 4; i++) {
+    car.update(DT, { ...IDLE, x: 1 });
+    w.step(DT);
+    if (i > 30) minSpeed = Math.min(minSpeed, car.speedKmh);
+    const up = car.body.vectorToWorldFrame(new CANNON.Vec3(0, 1, 0), new CANNON.Vec3());
+    maxRoll = Math.max(maxRoll, Math.acos(Math.min(1, up.y)));
+  }
+  assert.ok(minSpeed > 60, `speed dropped to ${minSpeed.toFixed(0)} km/h in a 90 km/h turn`);
+  assert.ok(maxRoll < 0.1, `roll ${(maxRoll * 57.3).toFixed(1)}°`);
+});
+
+// ---- helicopter and jet ----
+test('helicopter flies forward at a useful speed when W is held', () => {
+  const w = flatWorld();
+  const heli = new Helicopter(w, scene, 0, 0, 0);
+  steps(w, 240, () => heli.update(DT, { ...IDLE, throttle: 1 }));
+  steps(w, 60 * 25, () => heli.update(DT, { ...IDLE, y: 1 }));
+  const v = Math.hypot(heli.body.velocity.x, heli.body.velocity.z);
+  assert.ok(v > 35, `forward speed ${v.toFixed(1)} m/s after 25 s (about 150 km/h is the target)`);
+});
+
+test('a parked jet does not roll away on its own, and a piloted jet takes off within 25 s', () => {
+  const parked = flatWorld();
+  const p0 = new Plane(parked, scene, 0, 0, 0);
+  p0.placeAt(0, 0.65, 0, 0);
+  steps(parked, 60 * 15, () => p0.update(DT, IDLE));
+  assert.ok(Math.abs(p0.body.position.z) < 0.5, `parked jet moved to z=${p0.body.position.z}`);
+
+  const w = flatWorld();
+  const p = new Plane(w, scene, 0, 0, 0);
+  p.piloted = true;
+  p.placeAt(0, 0.65, 0, 0);
+  p.throttle = 1;
+  p.piloted = true;
+  let liftoff = null;
+  let t = 0;
+  for (let i = 0; i < 60 * 25; i++) {
+    p.update(DT, IDLE);
+    w.step(DT);
+    t += DT;
+    if (liftoff === null && p.body.position.y > 1.5) liftoff = t;
+  }
+  assert.ok(liftoff !== null && liftoff < 25, `liftoff at ${liftoff}`);
+});
+
+test('jet top speed is between 400 and 600 km/h at full throttle', () => {
+  const w = createPhysicsWorld();
+  const plane = new Plane(w, scene, 0, 0, 0);
+  steps(w, 60 * 90, () => plane.update(DT, { ...IDLE, throttle: 1 }));
+  assert.ok(plane.speedKmh > 400 && plane.speedKmh < 600, `jet at ${plane.speedKmh.toFixed(0)} km/h`);
+});

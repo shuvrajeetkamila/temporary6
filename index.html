@@ -31,6 +31,7 @@
         <button id="btn-map" class="chip" title="Map (M)">Map</button>
         <button id="btn-night" class="chip" title="Day / night (N)">Night</button>
         <button id="btn-help" class="chip" title="Controls (H)">Help</button>
+        <button id="btn-garage" class="chip" title="Summon vehicles (V)">Vehicles</button>
         <button id="btn-credits" class="chip" title="Credits and licences">Credits</button>
       </div>
     </header>
@@ -71,8 +72,33 @@
         <tr><td>Look around</td><td>Drag the screen · mouse wheel to zoom</td></tr>
         <tr><td>Map · teleport</td><td>M, then tap land</td></tr>
         <tr><td>Day / night</td><td>N</td></tr>
+        <tr><td>Vehicles list</td><td>V (or the Vehicles button)</td></tr>
+        <tr><td>Summon car, boat, jet, heli</td><td>1, 2, 3, 4</td></tr>
       </table>
       <p class="muted">Plane &amp; helicopter: W = nose down / forward tilt, A/D = bank or yaw.</p>
+    </div>
+
+    <div id="garage" class="hidden panel">
+      <button class="close" id="garage-close" aria-label="Close vehicles">✕</button>
+      <h2>Vehicles</h2>
+      <p class="muted">Summon puts a vehicle beside you. Boat and jet go to the nearest water or open ground if none is beside you. Keys 1–4 summon, V opens this list.</p>
+      <div class="garage-row" data-kind="car">
+        <div class="garage-name"><b>Car</b> <span class="muted" data-status></span></div>
+        <div class="garage-btns"><button data-summon="car">Summon</button><button data-home="car">Send home</button></div>
+      </div>
+      <div class="garage-row" data-kind="boat">
+        <div class="garage-name"><b>Boat</b> <span class="muted" data-status></span></div>
+        <div class="garage-btns"><button data-summon="boat">Summon</button><button data-home="boat">Send home</button></div>
+      </div>
+      <div class="garage-row" data-kind="plane">
+        <div class="garage-name"><b>Jet (A320)</b> <span class="muted" data-status></span></div>
+        <div class="garage-btns"><button data-summon="plane">Summon</button><button data-home="plane">Send home</button></div>
+      </div>
+      <div class="garage-row" data-kind="heli">
+        <div class="garage-name"><b>Helicopter</b> <span class="muted" data-status></span></div>
+        <div class="garage-btns"><button data-summon="heli">Summon</button><button data-home="heli">Send home</button></div>
+      </div>
+      <p class="muted">Get in with E when the prompt shows. Jet: hold Shift to throttle up, W nose down, A/D bank. Heli: Shift climbs, Ctrl descends, W flies forward.</p>
     </div>
 
     <div id="credits" class="hidden panel">

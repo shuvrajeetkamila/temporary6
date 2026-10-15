@@ -12,6 +12,7 @@ import { lonLatToXZ, pointInPoly } from './geo.js';
 import { PLACES, WATER_Y } from './config.js';
 import { computeSpawns, findFreeSpot } from './spawn.js';
 import { loadModels, loadEnvironment, ENV_FILES } from './entities/assets.js';
+import { summonPlacement } from './summon.js';
 
 const FIXED_DT = 1 / 60;
 const IDLE = { x: 0, y: 0, throttle: 0, brake: false, jump: false, run: false };
@@ -152,6 +153,7 @@ function enterVehicle(v) {
   state.mode = 'vehicle';
   state.vehicle = v;
   state.prompt = null;
+  v.piloted = true;
   human.setInWorld(false);
   state.orbitYaw = behindYaw(v);
   state.snap = true;
@@ -181,6 +183,7 @@ function exitVehicle(force = false) {
   const gy = groundHeightAt(physics, sx, sz);
   human.body.velocity.set(0, 0, 0);
   human.setInWorld(true, new CANNON.Vec3(sx, gy + Human.RADIUS + 0.4, sz));
+  v.piloted = false;
   state.mode = 'human';
   state.vehicle = null;
   state.snap = true;
@@ -194,6 +197,86 @@ function teleportTo(x, z) {
   state.snap = true;
   map.close();
   toast(`Teleported to ${nearestPlaceName(x, z)}`);
+}
+
+// ---------------------------------------------------------------- summon / send home
+const VEHICLE_KINDS = ['car', 'boat', 'plane', 'heli'];
+let lastSummon = null; // debug hook only
+const KIND_LABEL = { car: 'Car', boat: 'Boat', plane: 'Jet', heli: 'Helicopter' };
+
+/** Heading of the character (direction it faces), in the same convention as the vehicles' spawn headings. */
+function humanHeading() {
+  const f = human.forward();
+  return Math.atan2(f.fx, f.fz);
+}
+
+function summonVehicle(kind) {
+  if (state.mode !== 'human') {
+    toast('Get out first, then summon');
+    return;
+  }
+  const v = vehicles.find((x) => x.kind === kind);
+  if (!v) return;
+  const p = human.body.position;
+  const res = summonPlacement(
+    kind,
+    { x: p.x, z: p.z, heading: humanHeading() },
+    {
+      land,
+      colliders,
+      groundAt: (x, z) => groundHeightAt(physics, x, z),
+      // the other vehicles, so two summons do not land on top of each other
+      occupied: vehicles
+        .filter((o) => o !== v)
+        .map((o) => ({ x: o.body.position.x, z: o.body.position.z, r: Math.hypot(o.halfExtents.x, o.halfExtents.z) + 2 })),
+    },
+  );
+  if (!res.ok) {
+    toast(res.note);
+    return;
+  }
+  v.placeAt(res.x, res.y, res.z, res.heading);
+  v.sync?.(0);
+  lastSummon = { kind, ...res };
+  toast(`${KIND_LABEL[kind]} summoned · ${res.note}`);
+  updateGarage(true);
+}
+
+function sendHome(kind) {
+  const v = vehicles.find((x) => x.kind === kind);
+  if (!v) return;
+  if (state.vehicle === v) {
+    toast('Get out before sending it home');
+    return;
+  }
+  v.reset();
+  v.sync?.(0);
+  toast(`${KIND_LABEL[kind]} sent back to its spawn point`);
+  updateGarage(true);
+}
+
+function toggleGarage(force) {
+  const el = $('garage');
+  const open = force ?? el.classList.contains('hidden');
+  el.classList.toggle('hidden', !open);
+  if (open) updateGarage(true);
+}
+
+let garageTimer = 0;
+/** Refreshes the status line of each vehicle row (distance, in use) and enables the right buttons. */
+function updateGarage(force = false) {
+  const el = $('garage');
+  if (el.classList.contains('hidden') && !force) return;
+  const onFoot = state.mode === 'human';
+  for (const v of vehicles) {
+    const row = el.querySelector(`[data-kind="${v.kind}"]`);
+    if (!row) continue;
+    const driving = state.vehicle === v;
+    const d = Math.hypot(v.body.position.x - human.body.position.x, v.body.position.z - human.body.position.z);
+    row.querySelector('[data-status]').textContent = driving ? 'in use · you are driving it' : `${Math.round(d)} m away`;
+    row.querySelector('[data-summon]').disabled = !onFoot;
+    row.querySelector('[data-home]').disabled = driving;
+  }
 }
 
 function toggleNight() {
@@ -214,6 +297,10 @@ function bindUi() {
   $('btn-help').addEventListener('click', () => $('help').classList.toggle('hidden'));
   $('help-close').addEventListener('click', () => $('help').classList.add('hidden'));
   $('btn-credits').addEventListener('click', () => $('credits').classList.toggle('hidden'));
+  $('btn-garage').addEventListener('click', () => toggleGarage());
+  $('garage-close').addEventListener('click', () => toggleGarage(false));
+  for (const btn of document.querySelectorAll('[data-summon]')) btn.addEventListener('click', () => summonVehicle(btn.dataset.summon));
+  for (const btn of document.querySelectorAll('[data-home]')) btn.addEventListener('click', () => sendHome(btn.dataset.home));
   $('credits-close').addEventListener('click', () => $('credits').classList.add('hidden'));
 
   window.addEventListener('keydown', (e) => {
@@ -327,8 +414,15 @@ function doAction(action) {
 function handleKeys() {
   if (input.pressed('KeyE')) doAction('enter');
   if (input.pressed('KeyM')) map.toggle();
-  if (input.pressed('Escape')) map.close();
+  if (input.pressed('Escape')) {
+    map.close();
+    toggleGarage(false);
+  }
   if (input.pressed('KeyN')) toggleNight();
+  if (input.pressed('KeyV')) toggleGarage();
+  VEHICLE_KINDS.forEach((kind, i) => {
+    if (input.pressed(`Digit${i + 1}`)) summonVehicle(kind);
+  });
 }
 
 function updateProximity() {
@@ -421,6 +515,7 @@ function updateHud() {
     $('status-alt').textContent = alt;
   }
   $('btn-exit').classList.toggle('hidden', !v);
+  $('btn-garage').classList.toggle('hidden', !!v);
 }
 
 // ---------------------------------------------------------------- boot
@@ -489,6 +584,9 @@ async function boot() {
       renderInfo: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures }),
       human: () => human,
       vehicles: () => vehicles,
+      summon: (kind) => summonVehicle(kind),
+      groundHeightAt: (x, z) => groundHeightAt(physics, x, z),
+      lastSummon: () => lastSummon,
       camera,
       state,
       teleportTo,
@@ -566,6 +664,11 @@ function frame() {
   }
   updateCamera(dt);
   updateHud();
+  garageTimer -= dt;
+  if (garageTimer <= 0) {
+    garageTimer = 0.25;
+    updateGarage();
+  }
   map.update();
   renderer.render(scene, camera);
 }

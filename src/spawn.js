@@ -1,5 +1,5 @@
 // Spawn points for the player and the vehicles. Pure functions (no DOM, no three.js) so tests can check them.
-import { lonLatToXZ, nearestLandPoint, nearestSeaPoint, pointInPoly } from './geo.js';
+import { lonLatToXZ, nearestLandPoint, nearestSeaPoint, pointInLand } from './geo.js';
 import { CITY_CENTER } from './config.js';
 
 /** Bahrain International Airport (BAH) on Muharraq. */
@@ -12,7 +12,7 @@ export const RUNWAY_12_HEADING = Math.PI - (120 * Math.PI) / 180;
  * `colliders` provides blocked(x, z); pass null to skip the building check (no buildings loaded).
  */
 export function findFreeSpot(x, z, land, colliders, maxRadius = 600, pad = 1.5) {
-  const free = (px, pz) => pointInPoly(px, pz, land) && !(colliders && colliders.blocked(px, pz, pad));
+  const free = (px, pz) => pointInLand(px, pz, land) && !(colliders && colliders.blocked(px, pz, pad));
   if (free(x, z)) return [x, z];
   for (let r = 3; r < maxRadius; r += 3) {
     for (let a = 0; a < 360; a += 12) {

@@ -7,8 +7,8 @@ import { buildWorld } from './world/world.js';
 import { Human, Car, Boat, Plane, Helicopter } from './entities/vehicles.js';
 import { createInput } from './input.js';
 import { GameMap } from './map.js';
-import { getLandPolygon } from './land.js';
-import { lonLatToXZ, pointInPoly } from './geo.js';
+import { getLandRings } from './land.js';
+import { lonLatToXZ, pointInLand } from './geo.js';
 import { PLACES, WATER_Y } from './config.js';
 import { computeSpawns, findFreeSpot } from './spawn.js';
 import { loadModels, loadEnvironment, ENV_FILES } from './entities/assets.js';
@@ -174,7 +174,7 @@ function exitVehicle(force = false) {
       toast('Land the helicopter before getting out.');
       return;
     }
-    if (v.kind === 'boat' && !pointInPoly(side.x, side.z, land)) {
+    if (v.kind === 'boat' && !pointInLand(side.x, side.z, land)) {
       toast('Steer closer to the shore before stepping off.');
       return;
     }
@@ -542,7 +542,7 @@ let saveTimer = 5;
 let debugFreeCamera = false;
 
 async function boot() {
-  land = getLandPolygon();
+  land = getLandRings();
   $('loading-text').textContent = 'Building the island…';
   data = await loadDataset();
   $('data-source').textContent =
@@ -566,7 +566,7 @@ async function boot() {
   const sp = computeSpawns(land, colliders);
   // Resume the last spot, if it is still on land and clear of buildings.
   const saved = loadSavedSpot();
-  if (saved && pointInPoly(saved.x, saved.z, land) && !colliders.blocked(saved.x, saved.z)) sp.human = [saved.x, saved.z];
+  if (saved && pointInLand(saved.x, saved.z, land) && !colliders.blocked(saved.x, saved.z)) sp.human = [saved.x, saved.z];
   spawn = sp;
   colliders.update(sp.human[0], sp.human[1], 230);
   human = new Human(physics, scene, sp.human[0], sp.human[1]);

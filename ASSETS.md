@@ -12,6 +12,7 @@ All of these files ship inside the app (under `public/`), so they are bundled in
 | `public/models/A320_nologo.glb` | Airbus A320, logo-free variant, real scale (37.6 m). Jet | [amvlab/aircraft-models](https://github.com/amvlab/aircraft-models) | **CC BY 4.0. Credit required.** Unchanged file. Licence text: `public/models/LICENSE-amvlab-CC-BY-4.0.txt` |
 | `public/env/sky_clear_4k.hdr` | Sky HDRI for image-based light, desktop | Qwantani Pure Sky by Greg Zaal, pure-sky edits by Jarod Guest, [Poly Haven](https://polyhaven.com/a/qwantani_puresky), via Open Water (`site/assets/sky_clear_4k.hdr`) | CC0 1.0 |
 | `public/env/sky_clear_1k.hdr` | 1K version, for touch devices and low quality | Same as above, resized by the Open Water project | CC0 1.0 |
+| `src/data/bahrain-coast.json` | Bahrain land outline: 25 coastline rings (main island, Muharraq, Sitra, Hawar and islands) | OpenStreetMap coastline, 10 m, via [@geo-maps/earth-coastlines-10m](https://github.com/simonepri/geo-maps) 0.6.0, extracted by `scripts/extract-coast.mjs` | **ODbL 1.0. © OpenStreetMap contributors. Attribution required.** |
 | `public/textures/waternormals.jpg` | Sea normal map | three.js r186 examples (`examples/textures/waternormals.jpg`) | three.js MIT |
 
 Map data: see the attribution line in the app (OpenStreetMap contributors, ODbL) when the OSM extract is loaded.

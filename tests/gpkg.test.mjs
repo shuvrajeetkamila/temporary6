@@ -6,7 +6,7 @@ import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { readFeatures, readGpkgGeometry } from '../scripts/gpkg.mjs';
 import { buildDataset, simplify } from '../src/osm.js';
-import { getLandPolygon } from '../src/land.js';
+import { getLandRings } from '../src/land.js';
 
 // ---- helpers to write GeoPackage blobs (header + little-endian WKB) ----
 function header(srs = 4326, envelope = false) {
@@ -111,7 +111,7 @@ test('readFeatures reads buildings and roads from a GeoPackage and converts them
     const roadItems = readFeatures(file, 'highway');
     assert.equal(roadItems.length, 2);
 
-    const land = getLandPolygon();
+    const land = getLandRings();
     const d = buildDataset([...buildingItems, ...roadItems], land);
     assert.equal(d.buildings.length, 3, 'the sea building is dropped');
     const manama = d.buildings.find((b) => b.h === 12);

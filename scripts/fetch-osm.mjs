@@ -15,7 +15,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDataset, overpassToDataset } from '../src/osm.js';
-import { getLandPolygon } from '../src/land.js';
+import { getLandRings } from '../src/land.js';
 import { readFeatures } from './gpkg.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -116,7 +116,7 @@ async function loadFromOverpass(land) {
   throw lastErr;
 }
 
-const land = getLandPolygon();
+const land = getLandRings();
 let result = null;
 let origin = null;
 

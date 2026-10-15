@@ -1,7 +1,7 @@
 // Pure conversion of OpenStreetMap-style features (lon/lat polylines with tags) into compact world-space data.
 // Used by scripts/fetch-osm.mjs (Node) and nowhere else, so it has no DOM/three dependencies.
 // Inputs can come from the HOT/HDX GeoPackage export or from an Overpass API response.
-import { lonLatToXZ, pointInPoly } from './geo.js';
+import { lonLatToXZ, pointInLand } from './geo.js';
 
 export const ROAD_WIDTH = {
   motorway: 24, trunk: 20, primary: 14, secondary: 12, tertiary: 10,
@@ -88,7 +88,7 @@ export function buildDataset(items, landPoly) {
       }
       cx /= pts.length;
       cz /= pts.length;
-      if (!pointInPoly(cx, cz, landPoly)) {
+      if (!pointInLand(cx, cz, landPoly)) {
         skipped++;
         continue;
       }

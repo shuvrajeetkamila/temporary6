@@ -20,6 +20,12 @@ export function pointInPoly(x, z, poly) {
   return inside;
 }
 
+/** True if (x, z) is inside any ring of `rings` (a list of land polygons). */
+export function pointInLand(x, z, rings) {
+  for (const ring of rings) if (pointInPoly(x, z, ring)) return true;
+  return false;
+}
+
 /** Chaikin corner-cutting on a closed ring: smooths the coarse 46-point coastline. */
 export function chaikinClosed(pts, iterations = 3) {
   let cur = pts;
@@ -36,6 +42,20 @@ export function chaikinClosed(pts, iterations = 3) {
   return cur;
 }
 
+/** Bounds of a list of rings: { minX, maxX, minZ, maxZ }. */
+export function ringsBounds(rings) {
+  let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
+  for (const ring of rings) {
+    for (const [x, z] of ring) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (z < minZ) minZ = z;
+      if (z > maxZ) maxZ = z;
+    }
+  }
+  return { minX, maxX, minZ, maxZ };
+}
+
 export function bounds(pts) {
   let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
   for (const [x, z] of pts) {
@@ -48,25 +68,25 @@ export function bounds(pts) {
 }
 
 /** Find a sea point (outside the island) closest to (x, z), at least `minDist` from the shore. */
-export function nearestSeaPoint(x, z, poly, minDist = 25) {
+export function nearestSeaPoint(x, z, rings, minDist = 25) {
   for (let r = 0; r < 4000; r += 10) {
     for (let a = 0; a < 360; a += 10) {
       const px = x + r * Math.cos((a * Math.PI) / 180);
       const pz = z + r * Math.sin((a * Math.PI) / 180);
-      if (!pointInPoly(px, pz, poly) && r >= minDist) return [px, pz];
+      if (!pointInLand(px, pz, rings) && r >= minDist) return [px, pz];
     }
   }
   return [x, z];
 }
 
 /** Find a land point closest to (x, z). */
-export function nearestLandPoint(x, z, poly) {
-  if (pointInPoly(x, z, poly)) return [x, z];
+export function nearestLandPoint(x, z, rings) {
+  if (pointInLand(x, z, rings)) return [x, z];
   for (let r = 0; r < 20000; r += 25) {
     for (let a = 0; a < 360; a += 10) {
       const px = x + r * Math.cos((a * Math.PI) / 180);
       const pz = z + r * Math.sin((a * Math.PI) / 180);
-      if (pointInPoly(px, pz, poly)) return [px, pz];
+      if (pointInLand(px, pz, rings)) return [px, pz];
     }
   }
   return [x, z];

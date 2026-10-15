@@ -1,4 +1,4 @@
-import { getLandPolygon } from './land.js';
+import { getLandRings } from './land.js';
 import { generateProceduralCity } from './procedural.js';
 
 /**
@@ -7,7 +7,7 @@ import { generateProceduralCity } from './procedural.js';
  * Force the procedural city with ?city=procedural.
  */
 export async function loadDataset() {
-  const land = getLandPolygon();
+  const land = getLandRings();
   const params = new URLSearchParams(location.search);
 
   if (params.get('city') !== 'procedural') {

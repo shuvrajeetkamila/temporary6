@@ -1,6 +1,6 @@
 // Where a summoned vehicle appears: beside the character, on open ground or open water.
 // Pure functions (no DOM, no three.js) so the tests can check them.
-import { pointInPoly, nearestSeaPoint } from './geo.js';
+import { pointInLand, nearestSeaPoint } from './geo.js';
 import { WATER_Y } from './config.js';
 
 /** Length of the clear strip a jet needs for its take-off run (metres). */
@@ -20,7 +20,7 @@ export function footprintClear(x, z, heading, hx, hz, land, colliders, pad = 0.6
     // local -> world: forward is (sin h, cos h), right is (cos h, -sin h)
     const px = x + lx * c + lz * s;
     const pz = z - lx * s + lz * c;
-    if (!pointInPoly(px, pz, land)) return false;
+    if (!pointInLand(px, pz, land)) return false;
     if (colliders && colliders.blocked(px, pz, pad)) return false;
   }
   return true;
@@ -36,7 +36,7 @@ export function stripClear(x, z, heading, len, halfW, land, colliders) {
     for (let w = -halfW; w <= halfW; w += 6) {
       const px = x + fx * d + rx * w;
       const pz = z + fz * d + rz * w;
-      if (!pointInPoly(px, pz, land)) return false;
+      if (!pointInLand(px, pz, land)) return false;
       if (colliders && colliders.blocked(px, pz, 2)) return false;
     }
   }
@@ -112,7 +112,7 @@ export function summonPlacement(kind, human, { land, colliders, groundAt, occupi
         const rad = (a * Math.PI) / 180;
         const x = human.x + r * Math.cos(rad);
         const z = human.z + r * Math.sin(rad);
-        if (!pointInPoly(x, z, land) || !free(x, z, 19)) continue;
+        if (!pointInLand(x, z, land) || !free(x, z, 19)) continue;
         for (const hd of [h, h + Math.PI / 2, h + Math.PI, h + (3 * Math.PI) / 2]) {
           if (stripClear(x, z, hd, STRIP_LENGTH, 24, land, colliders)) {
             return { ok: true, x, y: groundAt(x, z) + 0.65, z, heading: hd, note: `Jet parked ${r} m away on open ground` };

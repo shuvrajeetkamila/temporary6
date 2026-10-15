@@ -1,7 +1,7 @@
 // Airport runway and palm trees along the roads. Pure three.js, no DOM.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { lonLatToXZ, pointInPoly } from '../geo.js';
+import { lonLatToXZ, pointInLand } from '../geo.js';
 import { AIRPORT, RUNWAY_12_HEADING } from '../spawn.js';
 
 /** Runway 12/30 at Bahrain International Airport. The jet spawns over it, facing runway 12. */
@@ -86,7 +86,7 @@ export function addPalms(group, roads, land, { max = 2500, seed = 42 } = {}) {
         const nz = ((bx - ax) / len) * off * side;
         const x = ax + (bx - ax) * t + nx;
         const z = az + (bz - az) * t + nz;
-        if (!pointInPoly(x, z, land)) continue;
+        if (!pointInLand(x, z, land)) continue;
         q.setFromAxisAngle(up, rnd() * Math.PI * 2);
         const sc = 0.8 + rnd() * 0.6;
         scale.set(sc, sc, sc);

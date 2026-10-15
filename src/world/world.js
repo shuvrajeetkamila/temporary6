@@ -138,8 +138,9 @@ export function buildWorld(scene, renderer, data) {
     sand: createSandTexture(renderer),
   };
 
-  const landShape = new THREE.Shape(data.land.map(([x, z]) => new THREE.Vector2(x, -z)));
-  const landGeo = new THREE.ExtrudeGeometry(landShape, { depth: 1.2, bevelEnabled: false, steps: 1 });
+  // one shape per island ring (main island, Muharraq, Sitra, Hawar, ...); Shape y is -z so the extrude lands in XZ
+  const landShapes = data.land.map((ring) => new THREE.Shape(ring.map(([x, z]) => new THREE.Vector2(x, -z))));
+  const landGeo = new THREE.ExtrudeGeometry(landShapes, { depth: 1.2, bevelEnabled: false, steps: 1 });
   landGeo.rotateX(-Math.PI / 2);
   landGeo.translate(0, -1.2, 0); // top surface at y = 0
   const landMat = new THREE.MeshStandardMaterial({ map: textures.sand, color: 0xffffff, roughness: 1, metalness: 0 });

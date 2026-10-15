@@ -45,7 +45,7 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 ## How the five steps map to the code
 
 ### Step 1 · Map generation
-- `src/land.js`, `src/data/bahrain-outline.json`: island outline (Natural Earth 1:10m, public domain), projected to metres and Chaikin-smoothed.
+- `src/land.js`, `src/data/bahrain-coast.json`: land as 25 OpenStreetMap coastline rings (main island, Muharraq, Sitra, Hawar and the other islands), ODbL. Built by `scripts/extract-coast.mjs`.
 - `src/geo.js`: local equirectangular projection centred on Bahrain (X = east, Z = south, Y up, sea level = 0).
 - `scripts/fetch-osm.mjs`: downloads the HOT/HDX Bahrain building and road GeoPackages (about 31k buildings, 72k road segments,
   updated monthly). If that fails, it runs an Overpass query. `scripts/gpkg.mjs` reads the GeoPackage with Node's built-in SQLite.
@@ -101,9 +101,8 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 
 ## Known limitations (read before building on this)
 
-- **Muharraq is an approximate outline.** It is a hand-digitised lobe joined to the main island by a short causeway strip.
-  It is not survey-accurate. Hawar and the smaller islands are not included. The airport is on Muharraq and is on land.
-  A proper fix would build the land polygon from OSM `natural=coastline`.
+- **Coastline is OSM at 10 m resolution, not survey data.** Land comes from the OpenStreetMap coastline (via `@geo-maps/earth-coastlines-10m`, ODbL).
+  Islets under about 2000 m² are dropped. Heights are flat (sea level 0), so there is no terrain relief.
 - **Real OSM extract is not in git** (`public/data/*.json` is ignored). The procedural city is used until you run `npm run fetch:osm`.
   The GitHub Actions APK build runs the fetch first, so the APK includes the real data when the download succeeds.
   OpenStreetMap data is © OpenStreetMap contributors, ODbL. The game shows that attribution when the extract is loaded.
@@ -141,7 +140,7 @@ src/input.js               keyboard + touch → one input object
 src/dataset.js             loads OSM extract or falls back to the procedural city
 src/osm.js                 OSM features → world-space buildings and roads (HDX and Overpass)
 src/procedural.js          offline city generator
-src/geo.js, src/land.js    projection, polygons, island outline
+src/geo.js, src/land.js    projection, polygons, land rings (coastline)
 scripts/fetch-osm.mjs      HDX GeoPackage downloader, Overpass fallback
 scripts/gpkg.mjs           GeoPackage reader (node:sqlite)
 tests/                     node:test checks for physics, spawns and data
@@ -150,5 +149,5 @@ android/                   Capacitor Android project
 
 ## Attribution
 
-- Island outline: Natural Earth (public domain), via the `world-atlas` npm package.
+- Coastline: © OpenStreetMap contributors (ODbL), via the `@geo-maps/earth-coastlines-10m` npm package (MIT code, ODbL data). Extracted by `scripts/extract-coast.mjs`.
 - Buildings and roads (optional extract): © OpenStreetMap contributors (ODbL).

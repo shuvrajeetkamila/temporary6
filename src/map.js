@@ -1,10 +1,10 @@
 // Dual-mode map: a circular minimap (top-right) that expands into a full-screen map.
 // One DOM element animates between the two states with a CSS transition.
 // Pan with drag, zoom with pinch or wheel, and tap to teleport.
-import { getLandPolygon } from './land.js';
+import { getLandRings } from './land.js';
 import { ROAD_WIDTH } from './osm.js';
 import { PLACES } from './config.js';
-import { lonLatToXZ, bounds, pointInPoly } from './geo.js';
+import { lonLatToXZ, ringsBounds, pointInLand } from './geo.js';
 
 const MINI_RADIUS_M = 650; // metres visible across the minimap diameter / 2
 const COLORS = {
@@ -68,8 +68,8 @@ export class GameMap {
     this.view = { cx: 0, cz: 0, scale: 0.1 };
     this.pointers = new Map();
     this.gesture = null;
-    this.land = getLandPolygon();
-    const b = bounds(this.land);
+    this.land = getLandRings();
+    const b = ringsBounds(this.land);
     this.landBounds = b;
     this.fitScale = 1;
     this.buildPaths();
@@ -78,9 +78,11 @@ export class GameMap {
 
   buildPaths() {
     const land = new Path2D();
-    land.moveTo(this.land[0][0], this.land[0][1]);
-    for (const [x, z] of this.land) land.lineTo(x, z);
-    land.closePath();
+    for (const ring of this.land) {
+      land.moveTo(ring[0][0], ring[0][1]);
+      for (const [x, z] of ring) land.lineTo(x, z);
+      land.closePath();
+    }
     this.landPath = land;
 
     // Chromium builds a single Path2D with many sub-paths very slowly (60k shapes took minutes),
@@ -218,7 +220,7 @@ export class GameMap {
     if (wasTap) {
       const p = this.local(e);
       const w = this.screenToWorld(p.x, p.y);
-      if (!pointInPoly(w.x, w.z, this.land)) {
+      if (!pointInLand(w.x, w.z, this.land)) {
         this.toast('That is open water. Tap a point on land.');
         return;
       }
@@ -316,8 +318,14 @@ export class GameMap {
       ctx.lineWidth = 3;
       ctx.strokeStyle = 'rgba(0,0,0,0.55)';
       ctx.fillStyle = '#fff';
+      // skip a label that would overlap one already drawn (Airport and Muharraq are close together)
+      const taken = [];
       for (const place of this.placeXZ) {
         const q = toScreen(place.x, place.z);
+        const w = ctx.measureText(place.name).width;
+        const box = { l: q.x - w / 2 - 2, r: q.x + w / 2 + 2, t: q.y - 22, b: q.y - 4 };
+        if (taken.some((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t)) continue;
+        taken.push(box);
         ctx.strokeText(place.name, q.x, q.y - 8);
         ctx.fillText(place.name, q.x, q.y - 8);
       }

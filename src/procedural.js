@@ -1,7 +1,7 @@
 // Offline fallback city used when no OSM extract is present. Deterministic (seeded).
 // It is a *placeholder* for real OSM data: a street grid around Manama plus two arterials.
 import { CITY_CENTER } from './config.js';
-import { lonLatToXZ, pointInPoly, seededRandom } from './geo.js';
+import { lonLatToXZ, pointInLand, seededRandom } from './geo.js';
 
 export function generateProceduralCity(landPoly, seed = 20261013) {
   const rnd = seededRandom(seed);
@@ -10,7 +10,7 @@ export function generateProceduralCity(landPoly, seed = 20261013) {
   const CELL = 70;      // block pitch (m)
   const STREET = 12;    // street width (m)
   const HALF = 3200;    // city extent from centre (m)
-  const inside = (x, z) => pointInPoly(x, z, landPoly);
+  const inside = (x, z) => pointInLand(x, z, landPoly);
 
   const x0 = cx - HALF;
   const z0 = cz - HALF;

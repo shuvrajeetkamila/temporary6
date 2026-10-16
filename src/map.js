@@ -331,13 +331,17 @@ export class GameMap {
         const clashes = (box) => taken.some((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t);
         const right = { l: q.x + 7, r: q.x + 9 + w + 2, t: q.y - 8, b: q.y + 8 };
         const left = { l: q.x - 9 - w - 2, r: q.x - 7, t: q.y - 8, b: q.y + 8 };
-        let side = null;
-        if (!clashes(right)) side = 'right';
-        else if (!clashes(left)) side = 'left';
-        if (!side) continue;
-        taken.push(side === 'right' ? right : left);
+        // prefer a side that stays inside the map, so a label near the edge is not cut off
+        const inside = (box) => box.l >= 2 && box.r <= W - 2;
+        const options = [['right', right], ['left', left]];
+        const pick = options.find(([, box]) => !clashes(box) && inside(box)) ?? options.find(([, box]) => !clashes(box));
+        if (!pick) continue;
+        const [side, box] = pick;
+        taken.push(box);
         ctx.textAlign = side === 'right' ? 'left' : 'right';
-        const x0 = side === 'right' ? q.x + 9 : q.x - 9;
+        // if the text still runs past an edge, slide it back inside
+        const shift = Math.max(0, 2 - box.l) - Math.max(0, box.r - (W - 2));
+        const x0 = (side === 'right' ? q.x + 9 : q.x - 9) + shift;
         ctx.strokeText(place.name, x0, q.y);
         ctx.fillText(place.name, x0, q.y);
       }

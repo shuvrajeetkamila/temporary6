@@ -74,7 +74,7 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 - `src/world/extras.js`: a 3.7 km runway 12/30 at the airport, and about 2,500 instanced palms along quiet roads (residential, service, living street, unclassified; `street` in the procedural city).
 - Sea: custom animated shader with a fresnel term and a sun glint (instead of `THREE.Water`, which needs a normal-map image).
 - Sky gradient, fog, soft shadows that follow the player, and a day/night blend.
-- Models: the character (Xbot, with idle, walk and run clips) and the car (Ferrari body, with physics wheels) are real glTF files, loaded at boot (`src/entities/assets.js`). The boat, plane and helicopter are primitives (`src/entities/models.js`). Physics does not depend on the models.
+- Models: the character (Xbot, with idle, walk and run clips), the boat (ZEFIRO) and the jet (A320) are real glTF files, loaded at boot (`src/entities/assets.js`). The car and helicopter are primitives (`src/entities/models.js`). Physics does not depend on the models.
 
 ### Step 4 · UI and map
 - `src/map.js`: one element (`#minimap`) animates with CSS from a circular minimap (top-right, follows the player, north up) to a full-screen map.
@@ -114,10 +114,10 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 - **Performance on phones with the full OSM extract is untested.** The Bahrain extract has about 31k footprints and about 72k road segments.
   Building meshes are chunked and distance-culled, but there is no level-of-detail yet. Procedural mode is the safe default for low-end devices.
 - Building colliders are axis-aligned boxes around each footprint, so rotated walls are approximate.
-- The jet is an arcade model (a 2 m collider with lift applied from the code, not a wing simulation).
-- **Real models: the human (Xbot) and the car (Ferrari body) are glTF models.** The boat, plane and helicopter are still primitives,
-  because the three.js package has no suitable models for them. Each builder in `src/entities/models.js` falls back to its primitive model
-  if its file fails to load. Model sources and licences are in `ASSETS.md`. **The Ferrari licence needs checking before publishing.**
+- The jet is an arcade model (a 7.2 m collider with lift applied from the code, not a wing simulation).
+- **Real models: the human (Xbot), the boat (ZEFIRO) and the jet (A320) are glTF models.** The car and helicopter are still primitives.
+  The Ferrari car body was removed because its licence could not be verified. Each builder in `src/entities/models.js` falls back to its primitive model
+  if its file fails to load. Model sources and licences are in `ASSETS.md`.
 - Browser check: headless Chromium (WebGL 2, SwiftShader) loads the game with no page errors. It was checked for boot,
   the spawn view, the car and character models, and the sea. Checked by eye from screenshots, not by an automated test.
   Not yet checked: real-OSM rendering in a browser (the sandbox cannot reach HDX), the walk and run animations while moving,

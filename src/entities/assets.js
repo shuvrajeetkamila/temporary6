@@ -2,12 +2,11 @@
 // Sources and licences: see ASSETS.md (three.js examples, MIT; model licences noted there).
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 const MODELS = {
   human: 'models/Xbot.glb', // Mixamo character with idle, walk and run clips
-  car: 'models/ferrari.glb', // Ferrari body; the physics wheels are kept
+  // no car body is bundled: the Ferrari was removed because its licence could not be verified (see ASSETS.md)
   boat: 'models/zefiro_6.5.glb', // ZEFIRO motorboat, CC BY 4.0 (angelo raffaele catalano, Sketchfab)
   plane: 'models/A320_nologo.glb', // Airbus A320, logo-free, CC BY 4.0 (amvlab)
 };
@@ -22,11 +21,7 @@ const withTimeout = (p, ms, what) =>
 
 /** Loads all models in parallel. Never throws: a failed model simply stays on its primitive fallback. */
 export async function loadModels({ timeoutMs = 20000 } = {}) {
-  // The Ferrari file is Draco-compressed. The decoder is bundled in public/draco so the APK works offline.
-  const draco = new DRACOLoader();
-  draco.setDecoderPath('draco/gltf/');
   const loader = new GLTFLoader();
-  loader.setDRACOLoader(draco);
   await Promise.all(
     Object.entries(MODELS).map(async ([key, url]) => {
       try {

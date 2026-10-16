@@ -51,6 +51,9 @@ jobs:
           fi
           echo "$MSG"
           echo "$MSG" >> "$GITHUB_STEP_SUMMARY"
+          if [ -s public/data/bahrain-osm.json ]; then
+            node -e "const j=require('./public/data/bahrain-osm.json'); console.log('Counts: ' + (j.buildings||[]).length + ' buildings, ' + (j.roads||[]).length + ' road segments, ' + ' origin ' + j.origin)" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Run tests
         run: npm test

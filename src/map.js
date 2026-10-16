@@ -319,15 +319,27 @@ export class GameMap {
       ctx.strokeStyle = 'rgba(0,0,0,0.55)';
       ctx.fillStyle = '#fff';
       // skip a label that would overlap one already drawn (Airport and Muharraq are close together)
+      // each label sits beside its dot (right, or left if the right side is taken), so the text never covers the marker
+      ctx.textBaseline = 'middle';
+      // main towns first, so they win when two labels collide (Muharraq must not lose to the Airport label)
+      const LABEL_RANK = ['Muharraq', 'Manama', 'Riffa', 'Isa Town'];
+      const rank = (p) => { const i = LABEL_RANK.indexOf(p.name); return i < 0 ? 99 : i; };
       const taken = [];
-      for (const place of this.placeXZ) {
+      for (const place of [...this.placeXZ].sort((a, b) => rank(a) - rank(b))) {
         const q = toScreen(place.x, place.z);
         const w = ctx.measureText(place.name).width;
-        const box = { l: q.x - w / 2 - 2, r: q.x + w / 2 + 2, t: q.y - 22, b: q.y - 4 };
-        if (taken.some((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t)) continue;
-        taken.push(box);
-        ctx.strokeText(place.name, q.x, q.y - 8);
-        ctx.fillText(place.name, q.x, q.y - 8);
+        const clashes = (box) => taken.some((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t);
+        const right = { l: q.x + 7, r: q.x + 9 + w + 2, t: q.y - 8, b: q.y + 8 };
+        const left = { l: q.x - 9 - w - 2, r: q.x - 7, t: q.y - 8, b: q.y + 8 };
+        let side = null;
+        if (!clashes(right)) side = 'right';
+        else if (!clashes(left)) side = 'left';
+        if (!side) continue;
+        taken.push(side === 'right' ? right : left);
+        ctx.textAlign = side === 'right' ? 'left' : 'right';
+        const x0 = side === 'right' ? q.x + 9 : q.x - 9;
+        ctx.strokeText(place.name, x0, q.y);
+        ctx.fillText(place.name, x0, q.y);
       }
     }
 

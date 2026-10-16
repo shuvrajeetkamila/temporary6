@@ -107,6 +107,10 @@ Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or ya
 - **Real OSM extract is not in git** (`public/data/*.json` is ignored). The procedural city is used until you run `npm run fetch:osm`.
   The GitHub Actions APK build runs the fetch first, so the APK includes the real data when the download succeeds.
   OpenStreetMap data is © OpenStreetMap contributors, ODbL. The game shows that attribution when the extract is loaded.
+- **Islets smaller than about 0.2 km² are not in the coastline source.** The 10 m dataset has no land that small in the Bahrain box, so a lower cut-off changes nothing.
+- **Helicopter is still a primitive model.** No small licensed helicopter model could be fetched from the allowed hosts.
+- **Terrain is flat.** No DEM source is reachable offline. Bahrain is very low, so relief is a small effect.
+- **A car that drops through the ground is stood up again.** The box chassis can fall through the land collider when it lands on its side. A safety net puts it back on its wheels above the ground.
 - **Performance on phones with the full OSM extract is untested.** The Bahrain extract has about 31k footprints and about 72k road segments.
   Building meshes are chunked and distance-culled, but there is no level-of-detail yet. Procedural mode is the safe default for low-end devices.
 - Building colliders are axis-aligned boxes around each footprint, so rotated walls are approximate.

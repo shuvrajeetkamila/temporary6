@@ -251,10 +251,7 @@ function rightVehicle() {
     toast('Only the car and boat can be righted');
     return;
   }
-  const p = v.body.position;
-  const y = v.kind === 'car' ? groundHeightAt(physics, p.x, p.z) + 1.2 : p.y + 1.0;
-  v.placeAt(p.x, y, p.z, headingOf(v.body.quaternion));
-  v.sync?.(0);
+  standUp(v);
   toast(`${KIND_LABEL[v.kind]} righted`);
 }
 
@@ -468,9 +465,23 @@ function updateProximity() {
   }
 }
 
+/** Puts a car or boat back on its wheels or keel above the ground at its current spot, facing the same way. */
+function standUp(v) {
+  const p = v.body.position;
+  const y = v.kind === 'car' ? groundHeightAt(physics, p.x, p.z) + 1.2 : p.y + 1.0;
+  v.placeAt(p.x, y, p.z, headingOf(v.body.quaternion));
+  v.sync?.(0);
+}
+
 function respawnIfLost() {
   for (const v of vehicles) {
     const p = v.body.position;
+    // a car whose box chassis has dropped through the land collider is stood up again at once, not left to fall
+    if (v.kind === 'car' && p.y < groundHeightAt(physics, p.x, p.z) - 1.5 && Math.abs(p.x) < 60000 && Math.abs(p.z) < 60000) {
+      standUp(v);
+      toast(`${v.name} was stood up after it sank into the ground`);
+      continue;
+    }
     if (p.y < -25 || Math.abs(p.x) > 60000 || Math.abs(p.z) > 60000) {
       if (state.vehicle === v) exitVehicle(true);
       v.reset();
@@ -566,7 +577,7 @@ async function boot() {
   data = await loadDataset();
   $('data-source').textContent =
     data.source === 'osm'
-      ? `Map: OpenStreetMap extract (${data.buildings.length.toLocaleString()} buildings)`
+      ? `Map: OpenStreetMap extract (${data.buildings.length.toLocaleString()} buildings, ${(data.roads?.length ?? 0).toLocaleString()} road segments)`
       : `Map: procedural city · run “npm run fetch:osm” for real buildings`;
   $('attribution').textContent = [data.attribution, 'Boat & aircraft CC BY 4.0 · sky CC0 · see Credits'].filter(Boolean).join(' · ');
 

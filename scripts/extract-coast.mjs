@@ -17,7 +17,7 @@ if (!src) {
   process.exit(1);
 }
 const BOX = { w: 50.25, e: 50.95, s: 25.5, n: 26.5 }; // Bahrain and its nearby islands
-const MIN_AREA_M2 = 2000; // drop tiny islets and rocks
+const MIN_AREA_M2 = 2000; // drop tiny specks. The source has no land smaller than about 0.2 km² in this box anyway
 const M_LAT = 110574;
 const M_LON = 111320 * Math.cos((26.05 * Math.PI) / 180);
 

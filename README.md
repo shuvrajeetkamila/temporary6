@@ -38,6 +38,7 @@ If the world fails to load, an error panel offers **Retry** and **Procedural cit
 | Map · teleport | M, then tap a point on land | tap the minimap |
 | Vehicles list (summon / send home) | V, or the **Vehicles** button | **Vehicles** button |
 | Summon car · boat · jet · helicopter | 1 · 2 · 3 · 4 (on foot) | Vehicles list |
+| Right a flipped car or boat | R | **Right it** button (while driving a car or boat) |
 | Day / night | N | — |
 
 Plane & helicopter: **W = nose down / forward tilt**, **A/D = bank (plane) or yaw (helicopter)**.

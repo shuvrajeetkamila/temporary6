@@ -13,6 +13,7 @@ import { PLACES, WATER_Y } from './config.js';
 import { computeSpawns, findFreeSpot } from './spawn.js';
 import { loadModels, loadEnvironment, ENV_FILES } from './entities/assets.js';
 import { summonPlacement } from './summon.js';
+import { headingOf } from './entities/uprighting.js';
 
 const FIXED_DT = 1 / 60;
 const IDLE = { x: 0, y: 0, throttle: 0, brake: false, jump: false, run: false };
@@ -242,6 +243,21 @@ function summonVehicle(kind) {
   updateGarage(true);
 }
 
+/** Stands a flipped or tipped car or boat back on its wheels or keel, facing the same way, a little above the ground. */
+function rightVehicle() {
+  const v = state.vehicle;
+  if (state.mode !== 'vehicle' || !v) return;
+  if (v.kind !== 'car' && v.kind !== 'boat') {
+    toast('Only the car and boat can be righted');
+    return;
+  }
+  const p = v.body.position;
+  const y = v.kind === 'car' ? groundHeightAt(physics, p.x, p.z) + 1.2 : p.y + 1.0;
+  v.placeAt(p.x, y, p.z, headingOf(v.body.quaternion));
+  v.sync?.(0);
+  toast(`${KIND_LABEL[v.kind]} righted`);
+}
+
 function sendHome(kind) {
   const v = vehicles.find((x) => x.kind === kind);
   if (!v) return;
@@ -298,6 +314,7 @@ function bindUi() {
   $('help-close').addEventListener('click', () => $('help').classList.add('hidden'));
   $('btn-credits').addEventListener('click', () => $('credits').classList.toggle('hidden'));
   $('btn-garage').addEventListener('click', () => toggleGarage());
+  $('btn-right').addEventListener('click', () => rightVehicle());
   $('garage-close').addEventListener('click', () => toggleGarage(false));
   for (const btn of document.querySelectorAll('[data-summon]')) btn.addEventListener('click', () => summonVehicle(btn.dataset.summon));
   for (const btn of document.querySelectorAll('[data-home]')) btn.addEventListener('click', () => sendHome(btn.dataset.home));
@@ -420,6 +437,7 @@ function handleKeys() {
   }
   if (input.pressed('KeyN')) toggleNight();
   if (input.pressed('KeyV')) toggleGarage();
+  if (input.pressed('KeyR')) rightVehicle();
   VEHICLE_KINDS.forEach((kind, i) => {
     if (input.pressed(`Digit${i + 1}`)) summonVehicle(kind);
   });
@@ -516,6 +534,7 @@ function updateHud() {
   }
   $('btn-exit').classList.toggle('hidden', !v);
   $('btn-garage').classList.toggle('hidden', !!v);
+  $('btn-right').classList.toggle('hidden', !(v && (v.kind === 'car' || v.kind === 'boat')));
 }
 
 // ---------------------------------------------------------------- boot

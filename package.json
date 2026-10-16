@@ -11,7 +11,8 @@
     "fetch:osm": "node scripts/fetch-osm.mjs",
     "cap:sync": "npm run build && npx cap sync android",
     "cap:open": "npx cap open android",
-    "test": "node --test tests/physics.test.mjs tests/data.test.mjs tests/gpkg.test.mjs tests/spawn.test.mjs tests/uprighting.test.mjs"
+    "test": "node --test tests/flight.test.mjs tests/physics.test.mjs tests/data.test.mjs tests/gpkg.test.mjs tests/spawn.test.mjs tests/uprighting.test.mjs",
+    "audit:land": "node scripts/audit-land.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.3",

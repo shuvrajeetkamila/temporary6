@@ -5,6 +5,7 @@ import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
 import { addDynamicBody, addHullShapes, groundHeightAt, MATERIALS } from '../physics.js';
 import { WATER_Y, GRAVITY } from '../config.js';
+import { JET, aeroForces, thrustAt } from '../flight.js';
 import { buildHuman, buildCar, buildWheel, buildBoat, buildPlane, buildHelicopter } from './models.js';
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -420,11 +421,28 @@ const _fwd = new CANNON.Vec3();
 const _up = new CANNON.Vec3();
 const _right = new CANNON.Vec3();
 const _av = new CANNON.Vec3();
+const _tau = new CANNON.Vec3();
+const _angL = new CANNON.Vec3();
 
 /** Sets the body's angular velocity from local-frame rates (x = pitch, y = yaw, z = roll). */
 function setLocalAngularVelocity(body, ax, ay, az) {
   body.vectorToWorldFrame(V(ax, ay, az), _av);
   body.angularVelocity.copy(_av);
+}
+
+/**
+ * Jet contact shapes. The gear touches the runway, and the tail skid is set high enough that the nose can rotate
+ * to about 11° before the tail strikes (as on a real airliner). Spheres only: boxes fall through the island mesh.
+ * Gear centres sit at the box bottom, so the body rests with the wheels on the ground.
+ */
+function addJetHull(body) {
+  const gear = 0.54;
+  body.addShape(new CANNON.Sphere(gear), new CANNON.Vec3(0, -0.06, 2.6)); // nose gear
+  body.addShape(new CANNON.Sphere(gear), new CANNON.Vec3(1.1, -0.06, -0.1)); // right main gear, close to the centre of mass
+  body.addShape(new CANNON.Sphere(gear), new CANNON.Vec3(-1.1, -0.06, -0.1)); // left main gear
+  body.addShape(new CANNON.Sphere(0.3), new CANNON.Vec3(0, 0.35, -3.4)); // tail skid
+  body.addShape(new CANNON.Sphere(0.6), new CANNON.Vec3(0, 0.5, 0)); // fuselage top, for hits with objects
+  return body;
 }
 
 export class Plane {
@@ -434,17 +452,21 @@ export class Plane {
     this.world = world;
     this.halfExtents = new CANNON.Vec3(1.2, 0.6, 3.6);
     const gy = groundHeightAt(world, x, z);
-    this.spawn = { x, z, heading, y: gy + 60 };
+    this.spawn = { x, z, heading, y: gy + 0.65 }; // parked on the runway, cold and unpiloted
     this.body = addDynamicBody(world, {
-      mass: 3000,
+      mass: JET.mass,
       linearDamping: 0,
       angularDamping: 0,
-      material: MATERIALS.wheels, // a low-friction contact lets the jet roll along the ground under thrust
+      material: MATERIALS.wheels, // a low-friction contact; rolling resistance is applied in update()
     });
-    addHullShapes(this.body, this.halfExtents); // spheres, not a Box: boxes fall through the island mesh
-    this.throttle = 0.75;
+    addJetHull(this.body);
+    // Cannon derives the inertia from the hull spheres, which is far too small for an airliner
+    // (about 10× too little in pitch, 120× in yaw). Use the airliner's values. Cannon axes: X = pitch, Y = yaw, Z = roll.
+    this.body.inertia.set(JET.Iyy, JET.Izz, JET.Ixx);
+    this.body.invInertia.set(1 / JET.Iyy, 1 / JET.Izz, 1 / JET.Ixx);
+    this.throttle = 0;
     this.piloted = false;
-    this.onGround = false;
+    this.onGround = true;
     this.root = buildPlane();
     scene.add(this.root);
     this.reset();
@@ -462,15 +484,15 @@ export class Plane {
     const s = this.spawn;
     this.body.position.set(s.x, s.y, s.z);
     this.body.quaternion.setFromEuler(0, s.heading, 0);
-    const fwd = this.body.vectorToWorldFrame(V(0, 0, 1), _fwd);
-    this.body.velocity.set(fwd.x * 70, 0, fwd.z * 70);
+    this.body.velocity.set(0, 0, 0);
     this.body.angularVelocity.set(0, 0, 0);
-    this.throttle = 0.75;
+    this.throttle = 0;
+    this.piloted = false;
+    this.onGround = true;
   }
 
   update(dt, input) {
     const b = this.body;
-    const m = b.mass;
     const agl = b.position.y - groundHeightAt(this.world, b.position.x, b.position.z);
     this.onGround = agl < 1.0;
     // An unpiloted jet parked on the ground stays put (no thrust), so a summoned jet does not roll off by itself.
@@ -481,40 +503,45 @@ export class Plane {
     }
     this.throttle = clamp(this.throttle + input.throttle * dt * 0.5, 0, 1);
 
+    // Airflow in the aircraft frame. Body axes: forward +Z, up +Y, right -X (see the cannon body convention).
     const fwd = b.vectorToWorldFrame(V(0, 0, 1), _fwd);
     const up = b.vectorToWorldFrame(V(0, 1, 0), _up);
-    const v = b.velocity;
-    const speed = v.length();
-    const vf = v.dot(fwd);
-
-    // thrust along the nose; quadratic drag; lift grows with airspeed (lift ≈ weight at ~55 m/s)
-    const thrust = this.throttle * 12000;
-    const drag = 0.6 * speed; // drag force = drag · v, so it grows with v² (top speed about 500 km/h at full throttle)
-    const liftFactor = clamp((vf - 20) / 35, 0, 1.0);
-    // On the runway the lift is a little above the weight, so the nose leaves the ground once the speed is enough.
-    const lift = m * GRAVITY * liftFactor * (this.onGround ? 1.25 : 1);
-    b.applyForce(
-      V(
-        fwd.x * thrust - v.x * drag + up.x * lift,
-        fwd.y * thrust - v.y * drag + up.y * lift,
-        fwd.z * thrust - v.z * drag + up.z * lift,
-      ),
-      V(0, 0, 0),
-    );
-
-    // arcade attitude control: rates in the aircraft's own frame
     const right = b.vectorToWorldFrame(V(-1, 0, 0), _right);
-    // On the ground the undercarriage stops sideways drift (the contact has no friction, so this does the work of wheels).
-    if (b.position.y - groundHeightAt(this.world, b.position.x, b.position.z) < 2.5) {
-      const vr = v.dot(right);
-      b.velocity.x -= right.x * vr * Math.min(1, dt * 6);
-      b.velocity.z -= right.z * vr * Math.min(1, dt * 6);
+    const v = b.velocity;
+    const u = v.dot(fwd);
+    const vUp = v.dot(up);
+    const vRight = v.dot(right);
+    b.vectorToLocalFrame(b.angularVelocity, _angL);
+    // body rates from cannon's local angular velocity: wx = -q (nose up), wy = -r (nose right), wz = p (right wing down)
+    const rates = { p: _angL.z, q: -_angL.x, r: -_angL.y };
+    const alt = b.position.y;
+
+    // Stick: W = nose down (as before), A/D = aileron. Full deflection is about 20°.
+    const controls = { elevator: -input.y * 0.35, aileron: input.x * 0.35, rudder: 0 };
+    const aero = aeroForces({ u, vUp, vRight, ...rates }, controls, alt);
+    const thrust = thrustAt(this.throttle, alt, aero.V);
+
+    let fwdForce = aero.fwd + thrust;
+    const upForce = aero.up;
+    let rightForce = aero.right;
+    if (this.onGround) {
+      // weight on the wheels: the runway pushes up by what the wing does not carry
+      const normal = Math.max(0, JET.mass * GRAVITY - upForce);
+      // rolling resistance opposes the rolling direction
+      if (Math.abs(u) > 0.05) fwdForce -= Math.sign(u) * JET.rolloutMu * normal;
+      // wheels stop sideways sliding
+      rightForce -= JET.mass * 6 * vRight; // damps sideways speed at 6 per second
+      // nose-wheel steering: yaw rate follows the stick, only while moving on the ground
+      const steer = clamp(Math.abs(u) / 10, 0, 1);
+      b.angularVelocity.y = -input.x * 0.4 * steer;
+      // the nose wheel holds the pitch until rotation speed (no rotating on the runway)
+      if (u < JET.Vr) b.angularVelocity.x = 0;
     }
-    const levelRoll = Math.abs(input.x) < 0.05 ? right.y * 1.2 : 0; // gentle auto-level
-    const pitch = input.y * 0.9;
-    const roll = input.x * 1.6 + levelRoll;
-    const yaw = -input.x * 0.5;
-    setLocalAngularVelocity(b, pitch, yaw, roll);
+
+    // forces in cannon's frame: right is -X, up is +Y, forward is +Z
+    b.applyLocalForce(V(-rightForce, upForce, fwdForce), V(0, 0, 0));
+    // moments in cannon's frame: pitch-up is -X, nose-right is -Y, right-wing-down is +Z
+    b.applyTorque(b.vectorToWorldFrame(V(-aero.pitch, -aero.yaw, aero.roll), _tau));
   }
 
   sync() {

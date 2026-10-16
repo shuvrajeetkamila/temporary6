@@ -1,7 +1,7 @@
 import './style.css';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import { createPhysicsWorld, addLandCollider, BuildingColliders, groundHeightAt } from './physics.js';
+import { createPhysicsWorld, addLandCollider, BuildingColliders, groundHeightAt, groundHitAt } from './physics.js';
 import { loadDataset } from './dataset.js';
 import { buildWorld } from './world/world.js';
 import { Human, Car, Boat, Plane, Helicopter } from './entities/vehicles.js';
@@ -616,7 +616,15 @@ async function boot() {
       vehicles: () => vehicles,
       summon: (kind) => summonVehicle(kind),
       groundHeightAt: (x, z) => groundHeightAt(physics, x, z),
+      groundHitAt: (x, z) => groundHitAt(physics, x, z),
       lastSummon: () => lastSummon,
+      /** Land truth from the coastline data (same test the land audit uses). */
+      isLand: (x, z) => pointInLand(x, z, getLandRings()),
+      landRings: () => getLandRings(),
+      landBounds: () => {
+        const pts = getLandRings().flat();
+        return { minX: Math.min(...pts.map((p) => p[0])), maxX: Math.max(...pts.map((p) => p[0])), minZ: Math.min(...pts.map((p) => p[1])), maxZ: Math.max(...pts.map((p) => p[1])) };
+      },
       camera,
       state,
       teleportTo,

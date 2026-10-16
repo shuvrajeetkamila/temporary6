@@ -165,6 +165,14 @@ const _from = new CANNON.Vec3();
 const _to = new CANNON.Vec3();
 const _res = new CANNON.RaycastResult();
 
+/** True when a static collider (land or a building) is directly below (x, z). Lets tests tell land from a miss. */
+export function groundHitAt(world, x, z, fromY = 400) {
+  _from.set(x, fromY, z);
+  _to.set(x, -50, z);
+  _res.reset();
+  return !!world.raycastClosest(_from, _to, { collisionFilterMask: GROUP_STATIC, skipBackfaces: true }, _res);
+}
+
 /** Height of the terrain / rooftop under (x, z), using static geometry only. Returns 0 if nothing is hit. */
 export function groundHeightAt(world, x, z, fromY = 400) {
   _from.set(x, fromY, z);

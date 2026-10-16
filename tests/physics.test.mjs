@@ -54,15 +54,31 @@ test('boat floats at the waterline and moves under throttle', () => {
   assert.ok(boat.body.position.y < 0.5, 'boat should stay on the water');
 });
 
-test('jet holds altitude at cruise speed', () => {
+test('jet in cruise at 11 km holds its altitude and speed with no stick input', () => {
   const w = createPhysicsWorld();
   const plane = new Plane(w, scene, 0, 0, 0);
+  plane.placeAt(0, 11000, 0, 0);
+  const fwd = plane.body.vectorToWorldFrame(new CANNON.Vec3(0, 0, 1));
+  plane.body.velocity.set(fwd.x * 230, 0, fwd.z * 230);
   let minY = Infinity;
-  steps(w, 600, () => {
-    plane.update(DT, IDLE);
+  let maxY = -Infinity;
+  steps(w, 60 * 40, () => {
+    plane.update(DT, { ...IDLE, throttle: 0.85 });
     minY = Math.min(minY, plane.body.position.y);
+    maxY = Math.max(maxY, plane.body.position.y);
   });
-  assert.ok(minY > 55, `plane sank to ${minY}`);
+  assert.ok(maxY - minY < 300, `altitude wandered ${(maxY - minY).toFixed(0)} m`);
+  assert.ok(plane.body.velocity.length() > 180, `cruise speed ${plane.body.velocity.length().toFixed(0)} m/s`);
+});
+
+test('jet below its stall speed in the air sinks', () => {
+  const w = createPhysicsWorld();
+  const plane = new Plane(w, scene, 0, 0, 0);
+  plane.placeAt(0, 1500, 0, 0);
+  const fwd = plane.body.vectorToWorldFrame(new CANNON.Vec3(0, 0, 1));
+  plane.body.velocity.set(fwd.x * 55, 0, fwd.z * 55); // about 107 kt, well under the 74 m/s clean stall
+  steps(w, 60 * 6, () => plane.update(DT, { ...IDLE, throttle: 0 }));
+  assert.ok(plane.body.velocity.y < -5, `vertical speed ${plane.body.velocity.y.toFixed(1)} m/s`);
 });
 
 test('helicopter hovers with no input and climbs with throttle', () => {
@@ -163,7 +179,7 @@ test('helicopter flies forward at a useful speed when W is held', () => {
   assert.ok(v > 35, `forward speed ${v.toFixed(1)} m/s after 25 s (about 150 km/h is the target)`);
 });
 
-test('a parked jet does not roll away on its own, and a piloted jet takes off within 25 s', () => {
+test('a parked jet does not roll away on its own, and a piloted jet takes off after rotating at 75 m/s', () => {
   const parked = flatWorld();
   const p0 = new Plane(parked, scene, 0, 0, 0);
   p0.placeAt(0, 0.65, 0, 0);
@@ -172,24 +188,35 @@ test('a parked jet does not roll away on its own, and a piloted jet takes off wi
 
   const w = flatWorld();
   const p = new Plane(w, scene, 0, 0, 0);
-  p.piloted = true;
   p.placeAt(0, 0.65, 0, 0);
-  p.throttle = 1;
   p.piloted = true;
   let liftoff = null;
   let t = 0;
-  for (let i = 0; i < 60 * 25; i++) {
-    p.update(DT, IDLE);
+  let rotated = false;
+  for (let i = 0; i < 60 * 60; i++) {
+    const fwdSpeed = p.body.velocity.length();
+    if (fwdSpeed > 75) rotated = true;
+    p.update(DT, { ...IDLE, throttle: 1, y: rotated ? -1 : 0 }); // full throttle; stick back once at 75 m/s
     w.step(DT);
     t += DT;
-    if (liftoff === null && p.body.position.y > 1.5) liftoff = t;
+    if (liftoff === null && p.body.position.y > 1.5) liftoff = { t, v: fwdSpeed };
   }
-  assert.ok(liftoff !== null && liftoff < 25, `liftoff at ${liftoff}`);
+  assert.ok(liftoff !== null, 'the jet never left the runway');
+  assert.ok(liftoff.t < 45, `liftoff at ${liftoff.t.toFixed(1)} s`);
+  assert.ok(liftoff.v > 75 && liftoff.v < 110, `liftoff at ${liftoff.v.toFixed(0)} m/s`);
 });
 
-test('jet top speed is between 400 and 600 km/h at full throttle', () => {
+test('jet at 11 km at full throttle settles near Mach 0.8', () => {
   const w = createPhysicsWorld();
   const plane = new Plane(w, scene, 0, 0, 0);
-  steps(w, 60 * 90, () => plane.update(DT, { ...IDLE, throttle: 1 }));
-  assert.ok(plane.speedKmh > 400 && plane.speedKmh < 600, `jet at ${plane.speedKmh.toFixed(0)} km/h`);
+  plane.placeAt(0, 11000, 0, 0);
+  const fwd = plane.body.vectorToWorldFrame(new CANNON.Vec3(0, 0, 1));
+  plane.body.velocity.set(fwd.x * 230, 0, fwd.z * 230);
+  let top = 0;
+  steps(w, 60 * 150, () => {
+    plane.update(DT, { ...IDLE, throttle: 1 });
+    top = Math.max(top, plane.body.velocity.length());
+  });
+  const mach = top / 295;
+  assert.ok(mach > 0.75 && mach < 0.85, `top speed ${top.toFixed(0)} m/s, Mach ${mach.toFixed(3)}`);
 });

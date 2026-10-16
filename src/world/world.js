@@ -287,6 +287,12 @@ export function buildWorld(scene, renderer, data) {
     vertexShader: waterVS,
     fragmentShader: waterFS,
     fog: true,
+    // The sea sits only 0.35 m below the land. At a distance the depth buffer cannot tell them apart, so water
+    // showed through the sand in patches when seen from above. Pushing the water back in depth (in depth-buffer
+    // steps, so it works at any distance) lets the land win wherever the two meet.
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 4,
   });
   new THREE.TextureLoader().load('textures/waternormals.jpg', (tex) => {
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
